@@ -1,0 +1,106 @@
+name: Build Plugin
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - release/*
+      - feature/*
+      - add/*
+      - update/*
+      - fix/*
+      - try/*
+    workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: On Push
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@44454db4f0199b8b9685a5d763dc37cbf79108e1 # v2.36.0
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer, cs2pr
+
+      - name: Setup workflow context
+        id: workflow
+        working-directory: ${{ runner.temp }}
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir dist
+          echo "DIST=${PWD}/dist" >> $GITHUB_OUTPUT
+          echo "PACKAGE=${REPO##*/}" >> $GITHUB_OUTPUT
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version: 20.x
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+
+      - name: Cache node modules
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer vendor directory
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Show versions
+        run: |
+          php --version
+          composer --version
+          node --version
+          npm --version
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install PHP Dependencies
+        run: composer install --no-progress --no-dev --optimize-autoloader --prefer-dist
+
+      - name: Setup Registry
+        run: printf "\n//npm.pkg.github.com/:_authToken=${{ secrets.NEWFOLD_ACCESS_TOKEN }}" >> .npmrc
+
+      - name: NPM Install
+        run: npm install --legacy-peer-deps
+
+      - name: Build JavaScript
+        run: npm run build
+
+      - name: Prepare files
+        run: rsync -r --include-from=.distinclude --exclude-from=.distignore . ${{ steps.workflow.outputs.DIST }}
+
+      - name: List Files
+        working-directory: ${{ steps.workflow.outputs.DIST }}
+        run: find .
+
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: ${{ steps.workflow.outputs.PACKAGE }}
+          path: ${{ steps.workflow.outputs.DIST }}
