@@ -12,6 +12,8 @@
 /tests/playwright/screenshots
 /tests/playwright/videos
 /tests/playwright/test-results
+/artifacts/test-results
+/artifacts
 
 # Built-app files
 /.docs
