@@ -206,8 +206,8 @@ final class Admin {
 	 * @return string
 	 */
 	public static function add_brand_to_admin_footer( $footer_text ) {
-		$wordpress_url = '<a href="' . apply_filters( 'nfd_build_url', 'https://wordpress.org/', array( 'source' => 'webhostbox_admin_footer' ) ) . '">WordPress</a>';
-		$webhostbox_url   = '<a href="#">WebHostBox</a>';
+		$wordpress_url  = '<a href="' . apply_filters( 'nfd_build_url', 'https://wordpress.org/', array( 'source' => 'webhostbox_admin_footer' ) ) . '">WordPress</a>';
+		$webhostbox_url = '<a href="#">WebHostBox</a>';
 
 		// translators: %1$s is the WordPress URL, %2$s is the WebHostBox URL.
 		$footer_text = sprintf( \__( 'Thank you for creating with %1$s and %2$s', 'wp-plugin-webhostbox' ), $wordpress_url, $webhostbox_url );

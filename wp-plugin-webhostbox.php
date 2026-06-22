@@ -9,7 +9,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       WebHostBox Plugin
- * Plugin URI:        
+ * Plugin URI:
  * Update URI:        https://github.com/newfold-labs/wp-plugin-webhostbox/
  * Description:       WordPress plugin that integrates a WordPress site with the WebHostBox control panel, including performance, security, and update features.
  * Version:           1.0.0
@@ -17,7 +17,7 @@
  * Requires PHP:      7.4
  * Tested up to:      7.0
  * Author:            WebHostBox
- * Author URI:        
+ * Author URI:
  * Text Domain:       wp-plugin-webhostbox
  * Domain Path:       /languages
  * License:           GPL 2.0 or later
@@ -25,6 +25,7 @@
  */
 
 namespace WebHostBox;
+
 // Do not allow multiple copies of the WebHostBox Plugin to be active
 if ( defined( 'WEBHOSTBOX_PLUGIN_VERSION' ) ) {
 	exit;
@@ -46,7 +47,7 @@ define( 'WEBHOSTBOX_BUILD_URL', WEBHOSTBOX_PLUGIN_URL . 'build/' . WEBHOSTBOX_PL
 global $pagenow;
 if ( 'plugins.php' === $pagenow ) {
 
-	require WEBHOSTBOX_PLUGIN_DIR	 . '/inc/plugin-php-compat-check.php';
+	require WEBHOSTBOX_PLUGIN_DIR . '/inc/plugin-php-compat-check.php';
 
 	$plugin_check = new Plugin_PHP_Compat_Check( __FILE__ );
 

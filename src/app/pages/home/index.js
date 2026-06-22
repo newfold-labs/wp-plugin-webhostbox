@@ -40,10 +40,6 @@ const Home = () => {
 				<span>{__('Manage your website settings and content.', 'wp-plugin-webhostbox')}</span>
 			</Container.Header>
 
-			<Container.Block separator={true} className={'wpwhb-app-home-coming-soon'}>
-				<ComingSoon />
-			</Container.Block>
-
 			<Container.Block separator={true} className={'wpwhb-app-home-content'}>
 				<WebContentSection />
 			</Container.Block>
