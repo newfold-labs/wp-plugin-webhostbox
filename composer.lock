@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89afd4fcead93bb0fa9ec9dc73a22d8b",
+    "content-hash": "7271afbe0e5bad3653d3ba98c38612a9",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -586,20 +586,20 @@
         },
         {
             "name": "newfold-labs/wp-module-deactivation",
-            "version": "1.5.2",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/newfold-labs/wp-module-deactivation.git",
-                "reference": "a56e83510817e42113a47c609ad3bb8b60478d3e"
+                "reference": "c280d20c6ba44434e42e52791f581bc95ddcd41a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/newfold-labs/wp-module-deactivation/zipball/a56e83510817e42113a47c609ad3bb8b60478d3e",
-                "reference": "a56e83510817e42113a47c609ad3bb8b60478d3e",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-deactivation/zipball/c280d20c6ba44434e42e52791f581bc95ddcd41a",
+                "reference": "c280d20c6ba44434e42e52791f581bc95ddcd41a",
                 "shasum": ""
             },
             "require": {
-                "newfold-labs/wp-module-data": "^2.8.5"
+                "newfold-labs/wp-module-data": "^2.9.2"
             },
             "require-dev": {
                 "johnpbloch/wordpress": "@stable",
@@ -627,6 +627,14 @@
                     "@i18n-php",
                     "@i18n-json"
                 ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
                 "i18n-json": [
                     "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --no-purge --pretty-print"
                 ],
@@ -640,7 +648,7 @@
                     "vendor/bin/wp i18n update-po ./languages/wp-module-deactivation.pot ./languages"
                 ],
                 "i18n-pot": [
-                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-deactivation.pot --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-deactivation/issues\",\"POT-Creation-Date\":\"2024-12-12T07:59:34+00:00\"}' --exclude=tests,wordpress"
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-deactivation.pot --domain=wp-module-deactivation --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-deactivation/issues\",\"POT-Creation-Date\":\"2024-12-12T07:59:34+00:00\"}' --exclude=tests,wordpress"
                 ],
                 "lint": [
                     "vendor/bin/phpcs --standard=phpcs.xml -s ."
@@ -673,10 +681,10 @@
             ],
             "description": "A Module for handling WordPress brand plugins and modules deactivations",
             "support": {
-                "source": "https://github.com/newfold-labs/wp-module-deactivation/tree/1.5.2",
+                "source": "https://github.com/newfold-labs/wp-module-deactivation/tree/1.6.1",
                 "issues": "https://github.com/newfold-labs/wp-module-deactivation/issues"
             },
-            "time": "2025-06-30T22:01:30+00:00"
+            "time": "2026-02-06T13:33:31+00:00"
         },
         {
             "name": "newfold-labs/wp-module-features",
