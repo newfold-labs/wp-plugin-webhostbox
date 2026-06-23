@@ -1,0 +1,399 @@
+:root {
+    // Primary (Red Brand Colors)
+    --color-primary: #3498DB;
+    --color-primary-dark: #2980B9;
+    --color-primary-light: #5DADE2;
+    --color-primary-lighter: #D6EAF8;
+    // Secondary (Neutral Grays)
+    --color-secondary: #1F2937;
+    --color-secondary-dark: #111827;
+    --color-secondary-light: #4B5563;
+    --color-secondary-lighter: #F3F4F6;
+    // UI
+    --color-title: #1F2937;
+    --color-text: #374151;
+    --color-link: #BD5800;
+    --color-border: rgba(0, 0, 0, 0.1);
+    --color-success: #16A34A;
+    --color-warning: #EA580C;
+    --color-error: #DC2626;
+    // Contrast
+    --color-white: #FFFFFF;
+    --color-off-white: #F5F6F8;
+    --color-black: #000000;
+    --color-success-contrast: #DCFCE7;
+    --color-warning-contrast: #FFEDD5;
+    --color-error-contrast: #FEE2E2;
+    --color-canvas: #FDFDFD;
+
+    // NFD Module Overrides (wp-module-performance, etc.)
+    --nfd-color-primary: #3498DB;
+    --nfd-color-primary-dark: #2980B9;
+    --nfd-color-primary-light: #5DADE2;
+    --nfd-color-primary-lighter: #D6EAF8;
+    --nfd-color-secondary: #1F2937;
+    --nfd-color-secondary-dark: #111827;
+    --nfd-color-secondary-light: #F3F4F6;
+    --nfd-color-secondary-lighter: #F9FAFB;
+    --nfd-color-title: #1F2937;
+    --nfd-color-body: #374151;
+}
+
+// WebHostBox Brand Override - Higher specificity to override module styles
+html{
+    .nfd-root,
+    body .nfd-root {
+        --nfd-color-primary: #3498DB !important;
+        --nfd-color-primary-dark: #2980B9 !important;
+        --nfd-color-primary-light: #5DADE2 !important;
+        --nfd-color-primary-lighter: #D6EAF8 !important;
+        --nfd-color-secondary: #1B1A19 !important;
+        --nfd-color-secondary-dark: #111827 !important;
+        --nfd-color-secondary-light: #F3F4F6 !important;
+        --nfd-color-secondary-lighter: #F9FAFB !important;
+        --nfd-color-title: #1F2937 !important;
+        --nfd-color-body: #374151 !important;
+    }
+}
+
+html {
+    @media screen and (min-width: 782px) {
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+    }
+}
+
+body.toplevel_page_webhostbox {
+    --wp-admin-theme-color: var(--color-primary);
+    --wp-admin-theme-color-darker-10: var(--color-primary-dark);
+    --wp-admin-theme-color-darker-20: var(--color-black);
+    --wp-admin-border-width-focus: 2px;
+    --webbrand-focus: inset 0 0 0 1px var(--color-white), 0 0 0 var(--wp-admin-border-width-focus) var(--color-primary);
+
+    a {
+        color: var(--color-primary);
+    }
+
+    @media screen and (max-width:782px) {
+        .wp-responsive-open #wpbody {
+            right: -190px; // only when mobile admin menu open
+        }
+    }
+
+    #wpwrap {
+        background-color: var(--color-canvas);
+    }
+
+    #wpcontent {
+        padding-left: 0 !important;
+    }
+
+    #wpadminbar .ab-top-menu {
+        li {
+            transition: opacity .33s ease;
+        }
+
+        .hideme {
+            max-height: 32px;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+            width: 0;
+        }
+    }
+
+    #wpbody-content .notice,
+    #wpbody-content #dolly,
+    #wpbody-content .update-nag {
+        display: none;
+    }
+
+    #wpbody-content .newfold-notifications-wrapper .notice {
+        display: block;
+    }
+
+}
+
+// Top Bar Navigation Styles
+.wpwhb-app-topbar {
+    backdrop-filter: blur(8px);
+    position: relative;
+    width: 100%;
+    
+    .wpwhb-app-navitem {
+        white-space: nowrap;
+        
+        svg {
+            flex-shrink: 0;
+        }
+    }
+}
+
+// Ensure app container fills properly
+.wpwhb-app-container {
+    min-height: 100vh;
+}
+
+.wpwhb {
+    color: var(--color-text);
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--color-title);
+        font-weight: 700;
+    }
+
+    .wpwhb-nav a {
+        color: var(--color-black);
+    }
+
+    p,
+    div {
+        color: var(--color-title);
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .components-card__body .components-toggle-control .components-base-control__field .components-toggle-control__label,
+    .components-card__body .components-input-control__label,
+    .components-card__body .components-input-control__label *,
+    .components-card__body .components-radio-control__option label strong {
+        color: var(--color-text);
+    }
+
+    .components-button {
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+
+        .dashicons,
+        .dashicons-before:before {
+            transition: all .25s ease;
+        }
+
+        &:focus:not(:disabled) {
+            box-shadow: var(--webbrand-focus);
+        }
+
+        &.is-primary,
+        &[variant="primary"] {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        &.is-secondary,
+        &[variant="secondary"] {
+            border-color: var(--color-primary);
+            box-shadow: inset 0 0 0 1px var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        &:last-child {
+            padding-right: 1rem;
+            /* <= WP 5.8 */
+        }
+
+        &.has-icon {
+            padding-right: 1rem;
+
+            .dashicon {
+                margin-right: 10px;
+                /* <= WP 5.6 */
+            }
+        }
+    }
+
+    a:focus {
+        box-shadow: var(--webbrand-focus);
+        outline: 0;
+    }
+
+    .components-base-control__help,
+    .components-radio-control__option label span span {
+        color: var(--color-text);
+        margin-top: 0.25rem;
+    }
+}
+
+.wpwhb,
+.wpwhb * {
+    box-sizing: border-box;
+}
+
+.wpwhb-app-body {
+    padding: 2rem 24px 1rem;
+    background-color: #FFFFFF;
+    &-inner {
+        max-width: 1290px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+
+    @media screen and (max-width:782px) {
+        padding-top: 1.5rem;
+    }
+}
+
+.grid {
+    display: grid;
+    gap: clamp(0.5rem, calc(1rem + 1vw), 2rem);
+    padding: 0.5rem;
+
+    &.col2,
+    &.col3,
+    &.col4 {
+        @media screen and (min-width: 600px) {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    &.col3,
+    &.col4 {
+        @media screen and (min-width: 800px) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    &.col4 {
+        @media screen and (min-width: 1020px) {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+}
+
+.wpwhb-app-snackbar {
+    padding: 0 24px;
+    position: relative;
+
+    .components-snackbar-list {
+        bottom: .95rem;
+        position: fixed;
+    }
+
+    .components-snackbar {
+        background-color: var(--color-secondary-lighter);
+        box-shadow: inset -2px -2px 0px 4px var(--color-secondary-dark);
+    }
+
+    .components-snackbar__content {
+        color: var(--color-secondary-dark) !important;
+    }
+}
+
+.nfd-disabled {
+    opacity: .5;
+    pointer-events: disabled;
+}
+
+// Accordion styles for settings page
+.nfd-root .nfd-details {
+
+    summary {
+        align-items: center;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        list-style: none;
+        padding: 2rem;
+    }
+    
+    .nfd-details-content {
+        flex-grow: 1;
+        
+        h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        p {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0;
+        }
+    }
+
+    .nfd-details-icon {
+        flex-shrink: 0;
+        font-size: 1.5rem;
+        transform: rotate(180deg);
+        width: 1.5rem;
+        transition: color 0.25s ease, transform 0.25s ease;
+    }
+
+    &[open] {
+        .nfd-details-icon {
+            transform: rotate(0deg);
+        }
+    }
+
+    &:hover,
+    &[open] {
+        .nfd-details-icon {
+            color: var(--color-primary);
+        }
+    }
+}
+
+// Settings page layout adjustments
+.wpwhb-app-settings-container {
+    padding-bottom: 1.5rem;
+    
+    .nfd-details {
+        &:not(:last-child) {
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+// Performance accordion specific styles
+.performance-details {
+    &[open] {
+        #performance-portal {            
+            // Hide the performance module's built-in header using title attribute
+            .nfd-page[title="Performance"] > div:first-child {
+                display: none !important;
+            }
+            
+            // Also hide any h1 or h2 that says Performance in the portal
+            h1:contains("Performance"),
+            .nfd-page > div > h1,
+            .nfd-page > div > h2 {
+                &:first-child {
+                    display: none !important;
+                }
+            }
+            
+            // Remove container styling to prevent double border appearance
+            .nfd-container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                
+                // Remove bottom border from last block
+                .nfd-container__block:last-child > div {
+                    border-bottom: none !important;
+                }
+            }
+        }
+    }
+}
+
+
+// Remove separator after header on home, help, settings, and marketplace pages
+.wpwhb-app-home-container,
+.wpwhb-app-help-container,
+.wpwhb-app-settings-container,
+.wpwhb-app-marketplace-container {
+    .nfd-container__header {
+        border-bottom: none !important;
+        border-bottom-width: 0 !important;
+        margin-bottom: 0;
+    }
+}
