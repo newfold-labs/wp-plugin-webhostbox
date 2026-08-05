@@ -10,7 +10,7 @@ test.describe('Dashboard Widgets', () => {
     await newfold.clearCapabilities();
   });
 
-  test('Network solutions Widgets are all Accessible', async ({ page }) => {
+  test('WebHostBox Widgets are all Accessible', async ({ page }) => {
     // Wait for dashboard widgets to load with longer timeout
     await expect(page).toHaveURL('http://localhost:8886/wp-admin/index.php');
     
