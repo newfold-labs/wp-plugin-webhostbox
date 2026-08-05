@@ -2,7 +2,7 @@
     "name": "wp-plugin-webhostbox",
     "description": "WordPress plugin that integrates your WordPress site with the WebHostBox control panel, including performance, security, and update features.",
     "license": "GPL-2.0-or-later",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "private": true,
     "repository": {
         "type": "git",
@@ -81,8 +81,8 @@
         "storybook:build": "build-storybook -c ./storybook -o ./.docs",
         "test:e2e": "npm run test:playwright",
         "test:unit": "wp-scripts test-unit-js",
-		"test:playwright": "npx playwright test",
-		"test:playwright:update-projects": "node .github/scripts/generate-playwright-projects.mjs",
-		"test:clean-module": "bash ./.github/scripts/test-clean-module"
+        "test:playwright": "npx playwright test",
+        "test:playwright:update-projects": "node .github/scripts/generate-playwright-projects.mjs",
+        "test:clean-module": "bash ./.github/scripts/test-clean-module"
     }
 }
