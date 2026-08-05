@@ -12,10 +12,10 @@
  * Plugin URI:
  * Update URI:        https://github.com/newfold-labs/wp-plugin-webhostbox/
  * Description:       WordPress plugin that integrates a WordPress site with the WebHostBox control panel, including performance, security, and update features.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.6
  * Requires PHP:      7.4
- * Tested up to:      7.0
+ * Tested up to:      7.0.2
  * Author:            WebHostBox
  * Author URI:
  * Text Domain:       wp-plugin-webhostbox
@@ -32,7 +32,7 @@ if ( defined( 'WEBHOSTBOX_PLUGIN_VERSION' ) ) {
 }
 
 // Define constants
-define( 'WEBHOSTBOX_PLUGIN_VERSION', '1.0.0' );
+define( 'WEBHOSTBOX_PLUGIN_VERSION', '1.0.1' );
 define( 'WEBHOSTBOX_PLUGIN_FILE', __FILE__ );
 define( 'WEBHOSTBOX_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WEBHOSTBOX_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
