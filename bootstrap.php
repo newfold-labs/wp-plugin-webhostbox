@@ -125,7 +125,7 @@ if ( is_admin() ) {
 	// Handle plugin upgrades
 	$upgrade_handler = new UpgradeHandler(
 		WEBHOSTBOX_PLUGIN_DIR . '/inc/upgrades',            // Directory where upgrade routines live
-		get_option( 'webhostbox_plugin_version', '0.9.0' ), // Old plugin version (from database)
+		get_option( 'webhostbox_plugin_version', '1.0.0' ), // Old plugin version (from database)
 		WEBHOSTBOX_PLUGIN_VERSION                           // New plugin version (from code)
 	);
 
