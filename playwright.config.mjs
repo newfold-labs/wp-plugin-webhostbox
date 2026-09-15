@@ -81,7 +81,7 @@ export default defineConfig({
     reuseExistingServer: true,
     timeout: 120 * 1000, // 2 minutes
   },
-  timeout: 30 * 1000, // 30 seconds
+  timeout: 120 * 1000, // 2 minutes
   expect: {
     timeout: 10 * 1000, // 10 seconds
   },

@@ -9,6 +9,7 @@
 	--mdc-theme-error--dark: #991b1b;
 	--dc-theme-success: #16a34a;
 	--dc-theme-success--dark: #166534;
+	--dc-theme-link: #1a588c;
 }
 
 body {
@@ -56,7 +57,7 @@ footer p {
 }
 
 footer p a {
-	color: var(--mdc-theme-primary);
+	color: var(--dc-theme-link);
 	text-decoration: none;
 }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6dbb8bface6f326cfa36afe8bc3abee3",
+    "content-hash": "aab7dae9b5a7d1da4515d4709af965e3",
     "packages": [
         {
             "name": "colinmollenhour/credis",
@@ -224,6 +224,98 @@
             "time": "2026-07-20T15:13:47+00:00"
         },
         {
+            "name": "newfold-labs/wp-module-ai",
+            "version": "1.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-ai.git",
+                "reference": "d81bf3bfd563e1c7a028ffbeee800a8f5226c3d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-ai/zipball/d81bf3bfd563e1c7a028ffbeee800a8f5226c3d9",
+                "reference": "d81bf3bfd563e1c7a028ffbeee800a8f5226c3d9",
+                "shasum": ""
+            },
+            "require": {
+                "newfold-labs/wp-module-data": "^2.8.6",
+                "newfold-labs/wp-module-installer": "^1.7.2"
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "@stable",
+                "lucatume/wp-browser": "*",
+                "newfold-labs/wp-php-standards": "^1.2",
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.6.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\AI\\": "includes"
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "scripts": {
+                "fix": [
+                    "vendor/bin/phpcbf . --standard=phpcs.xml"
+                ],
+                "lint": [
+                    "vendor/bin/phpcs . --standard=phpcs.xml -s"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-ai.pot --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-ai/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=src,tests,wordpress"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-ai.pot ./languages"
+                ],
+                "i18n-mo": [
+                    "vendor/bin/wp i18n make-mo ./languages"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --no-purge --pretty-print"
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-mo",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov",
+                    "phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output;",
+                    "echo \"open tests/_output/html/index.html\" to view the report"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Micah Wood",
+                    "email": "micah@bluehost.com"
+                }
+            ],
+            "description": "A module for providing artificial intelligence capabilities.",
+            "time": "2026-02-11T22:09:51+00:00"
+        },
+        {
             "name": "newfold-labs/wp-module-atomic",
             "version": "1.4.2",
             "source": {
@@ -285,26 +377,26 @@
         },
         {
             "name": "newfold-labs/wp-module-coming-soon",
-            "version": "2.2.9",
+            "version": "2.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/newfold-labs/wp-module-coming-soon.git",
-                "reference": "8b96d3bc7482059c1324fe69675c67b3d3bba0ac"
+                "reference": "6c79e72b65d47e88cff7c650243813e87266faee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/newfold-labs/wp-module-coming-soon/zipball/8b96d3bc7482059c1324fe69675c67b3d3bba0ac",
-                "reference": "8b96d3bc7482059c1324fe69675c67b3d3bba0ac",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-coming-soon/zipball/6c79e72b65d47e88cff7c650243813e87266faee",
+                "reference": "6c79e72b65d47e88cff7c650243813e87266faee",
                 "shasum": ""
             },
             "require": {
-                "newfold-labs/wp-module-data": "^2.9.4",
+                "newfold-labs/wp-module-data": "^2.9.8",
                 "wp-forge/wp-upgrade-handler": "^1.0"
             },
             "require-dev": {
                 "johnpbloch/wordpress": "@stable",
                 "lucatume/wp-browser": "*",
-                "newfold-labs/wp-php-standards": "^1.2.6",
+                "newfold-labs/wp-php-standards": "^2.0.0",
                 "phpunit/phpcov": "*",
                 "wp-cli/i18n-command": "^2.7.0"
             },
@@ -369,7 +461,7 @@
                 }
             ],
             "description": "Coming Soon module for WordPress sites.",
-            "time": "2026-07-21T17:12:00+00:00"
+            "time": "2026-09-01T20:08:30+00:00"
         },
         {
             "name": "newfold-labs/wp-module-context",
@@ -652,6 +744,94 @@
             "time": "2025-06-30T22:01:30+00:00"
         },
         {
+            "name": "newfold-labs/wp-module-facebook",
+            "version": "1.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-facebook.git",
+                "reference": "59346eeeb164e64653a655b16de27485c40ef94b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-facebook/zipball/59346eeeb164e64653a655b16de27485c40ef94b",
+                "reference": "59346eeeb164e64653a655b16de27485c40ef94b",
+                "shasum": ""
+            },
+            "require": {
+                "newfold-labs/wp-module-data": "^2.9.7",
+                "newfold-labs/wp-module-loader": "^1.0.14"
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "@stable",
+                "lucatume/wp-browser": ">=3.7.16",
+                "newfold-labs/wp-php-standards": "^1.2.6",
+                "phpunit/phpcov": ">=8.2.1",
+                "wp-cli/i18n-command": "^2.7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\Facebook\\": "includes/"
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "scripts": {
+                "fix": [
+                    "vendor/bin/phpcbf --standard=phpcs.xml ."
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --pretty-print"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages --pretty-print"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-facebook.pot ./languages"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-facebook.pot --domain=wp-module-facebook --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-facebook/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=src,wordpress"
+                ],
+                "lint": [
+                    "vendor/bin/phpcs --standard=phpcs.xml -s ."
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov",
+                    "phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output;",
+                    "echo \"open tests/_output/html/index.html\" to view the report"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Beyond",
+                    "email": "team-spartans@newfold.com"
+                }
+            ],
+            "description": "Module connects to Customers Facebook profile and fetches data",
+            "time": "2026-08-18T16:24:48+00:00"
+        },
+        {
             "name": "newfold-labs/wp-module-features",
             "version": "1.5.2",
             "source": {
@@ -820,6 +1000,86 @@
             ],
             "description": "A centralized Newfold module for managing .htaccess files across Newfold brand plugins. It provides a canonical ruleset, validates syntax, prevents duplicate or conflicting directives, maintains backups, and exposes a consumer API for other modules to safely register their own rewrite fragments.",
             "time": "2026-02-06T16:41:21+00:00"
+        },
+        {
+            "name": "newfold-labs/wp-module-install-checker",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-install-checker.git",
+                "reference": "7ae3df8bc4a8a6992ceefbb34be5b26dd42af167"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-install-checker/zipball/7ae3df8bc4a8a6992ceefbb34be5b26dd42af167",
+                "reference": "7ae3df8bc4a8a6992ceefbb34be5b26dd42af167",
+                "shasum": ""
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "@stable",
+                "lucatume/wp-browser": "*",
+                "php": ">=7.3",
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.7.0",
+                "wpackagist-plugin/woocommerce": "@stable",
+                "wpackagist-theme/twentysixteen": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\InstallChecker\\": "includes/"
+                }
+            },
+            "scripts": {
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-install-checker.pot --domain=wp-module-install-checker --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-install-checker/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=tests,vendor,wordpress,node_modules,wp-content"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-install-checker.pot ./languages"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages --pretty-print"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --pretty-print"
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov",
+                    "phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output;",
+                    "echo \"open tests/_output/html/index.html\" to view the report"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Micah Wood",
+                    "homepage": "https://wpscholar.com"
+                }
+            ],
+            "description": "A module that handles checking a WordPress installation to see if it is a fresh install and to fetch the estimated installation date.",
+            "time": "2026-09-03T18:55:24+00:00"
         },
         {
             "name": "newfold-labs/wp-module-installer",
@@ -1127,6 +1387,90 @@
             "time": "2026-06-10T07:43:12+00:00"
         },
         {
+            "name": "newfold-labs/wp-module-migration",
+            "version": "1.7.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-migration.git",
+                "reference": "fd8e9cecc3b9f699049fa201082be3454fe47dd7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-migration/zipball/fd8e9cecc3b9f699049fa201082be3454fe47dd7",
+                "reference": "fd8e9cecc3b9f699049fa201082be3454fe47dd7",
+                "shasum": ""
+            },
+            "require": {
+                "newfold-labs/wp-module-loader": "^1.1.0"
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "6.9.4",
+                "lucatume/wp-browser": "*",
+                "newfold-labs/wp-php-standards": "^1.2",
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\Migration\\": "includes/"
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "scripts": {
+                "fix": [
+                    "vendor/bin/phpcbf --standard=phpcs.xml ."
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --pretty-print"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages --pretty-print"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-migration.pot ./languages"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-migration.pot --domain=wp-module-migration --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-migration/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=src,tests,wordpress"
+                ],
+                "lint": [
+                    "vendor/bin/phpcs --standard=phpcs.xml -s ."
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov",
+                    "phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output;",
+                    "echo \"open tests/_output/html/index.html\" to view the report"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "Beyond",
+                    "email": "team-spartans@newfold.com"
+                }
+            ],
+            "description": "Initiates the migration process",
+            "time": "2026-09-11T07:15:49+00:00"
+        },
+        {
             "name": "newfold-labs/wp-module-notifications",
             "version": "1.8.4",
             "source": {
@@ -1215,6 +1559,201 @@
             ],
             "description": "A module for managing Newfold in-site notifications.",
             "time": "2026-08-27T20:08:10+00:00"
+        },
+        {
+            "name": "newfold-labs/wp-module-onboarding",
+            "version": "dev-main-networksolutions",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-onboarding.git",
+                "reference": "170d25d7780f3781d45d340fafe2393fb701f265"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-onboarding/zipball/170d25d7780f3781d45d340fafe2393fb701f265",
+                "reference": "170d25d7780f3781d45d340fafe2393fb701f265",
+                "shasum": ""
+            },
+            "require": {
+                "mustache/mustache": "^2.14.2",
+                "newfold-labs/wp-module-facebook": "^1.3.3",
+                "newfold-labs/wp-module-migration": "^1.7.1",
+                "newfold-labs/wp-module-onboarding-data": "^1.2.27+ns",
+                "newfold-labs/wp-module-patterns": "^2.10.3",
+                "wp-cli/wp-config-transformer": "^1.4.4",
+                "wp-forge/helpers": "^2.0"
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "6.9.4",
+                "lucatume/wp-browser": "*",
+                "newfold-labs/wp-php-standards": "^1.2.5",
+                "php": ">=7.4",
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.7.0",
+                "wp-phpunit/wp-phpunit": "^6.9.4",
+                "yoast/phpunit-polyfills": "^4.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\Onboarding\\": "includes/"
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "scripts": {
+                "fix": [
+                    "vendor/bin/phpcbf . --standard=phpcs.xml"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-onboarding.pot --domain=wp-module-onboarding --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-onboarding/issues\",\"POT-Creation-Date\":\"2024-11-18T07:59:34+00:00\"}' --exclude=assets,tests,src,wordpress"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-onboarding.pot ./languages"
+                ],
+                "i18n-mo": [
+                    "vendor/bin/wp i18n make-mo ./languages"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages"
+                ],
+                "i18n-json": [
+                    "find ./languages -type f -name \"*.po\" -print0 | xargs -0 -I {} sh -c 'name=$(basename \"$1\" .po); npx po2json languages/\"$name\".po languages/\"$name\"-nfd-onboarding.json -f jed1.x' -- {}"
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "lint": [
+                    "vendor/bin/phpcs . --standard=phpcs.xml"
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov",
+                    "phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output;",
+                    "echo \"open tests/_output/html/index.html\" to view the report"
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Dave Ryan",
+                    "email": "dave@bluehost.com"
+                }
+            ],
+            "description": "Next-generation WordPress Onboarding for WordPress sites at Newfold Digital.",
+            "time": "2026-08-27T09:52:19+00:00"
+        },
+        {
+            "name": "newfold-labs/wp-module-onboarding-data",
+            "version": "1.2.27+ns",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-onboarding-data.git",
+                "reference": "6e527b7d19a6d2d89e7aaee3fd63d264b312c977"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-onboarding-data/zipball/6e527b7d19a6d2d89e7aaee3fd63d264b312c977",
+                "reference": "6e527b7d19a6d2d89e7aaee3fd63d264b312c977",
+                "shasum": ""
+            },
+            "require": {
+                "mustache/mustache": "^2.14.2",
+                "newfold-labs/wp-module-ai": "^1.3.1",
+                "newfold-labs/wp-module-data": "^2.6.5",
+                "newfold-labs/wp-module-install-checker": "^1.0.3",
+                "newfold-labs/wp-module-installer": "^1.2.0",
+                "newfold-labs/wp-module-patterns": "^2.6",
+                "newfold-labs/wp-module-performance": "^3.0.0",
+                "newfold-labs/wp-module-survey": "^1.0.1",
+                "wp-forge/wp-upgrade-handler": "^1.0"
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "@stable",
+                "lucatume/wp-browser": "*",
+                "newfold-labs/wp-php-standards": "^1.2.4",
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.6.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\Onboarding\\Data\\": "includes/"
+                },
+                "files": [
+                    "includes/I18n.php"
+                ]
+            },
+            "scripts": {
+                "fix": [
+                    "vendor/bin/phpcbf . --ignore=*/build/* --standard=phpcs.xml -d error_reporting=\"E_ALL&~E_DEPRECATED\""
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-mo",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --no-purge --pretty-print"
+                ],
+                "i18n-mo": [
+                    "vendor/bin/wp i18n make-mo ./languages"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-onboarding-data.pot ./languages"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-onboarding-data.pot --domain=wp-module-onboarding-data --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-onboarding-data/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=wordpress"
+                ],
+                "lint": [
+                    "vendor/bin/phpcs . --ignore=*/build/* --standard=phpcs.xml -d error_reporting=\"E_ALL&~E_DEPRECATED\""
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov",
+                    "phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output;",
+                    "echo \"open tests/_output/html/index.html\" to view the report"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "arunshenoy99",
+                    "email": "devarunshenoy99@gmail.com"
+                }
+            ],
+            "description": "A non-toggleable module containing a standardized interface for interacting with Onboarding data.",
+            "time": "2026-08-27T09:43:31+00:00"
         },
         {
             "name": "newfold-labs/wp-module-patterns",
@@ -1555,16 +2094,16 @@
         },
         {
             "name": "newfold-labs/wp-module-secure-passwords",
-            "version": "1.1.3",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/newfold-labs/wp-module-secure-passwords.git",
-                "reference": "83639189ef6cd21894ee8119b9b330c3da50baa4"
+                "reference": "90e72590cff50f1af31bbc2171bf41ba8e4a1d61"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/newfold-labs/wp-module-secure-passwords/zipball/83639189ef6cd21894ee8119b9b330c3da50baa4",
-                "reference": "83639189ef6cd21894ee8119b9b330c3da50baa4",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-secure-passwords/zipball/90e72590cff50f1af31bbc2171bf41ba8e4a1d61",
+                "reference": "90e72590cff50f1af31bbc2171bf41ba8e4a1d61",
                 "shasum": ""
             },
             "require-dev": {
@@ -1572,7 +2111,8 @@
                 "lucatume/wp-browser": "*",
                 "newfold-labs/wp-module-loader": "^1.0",
                 "newfold-labs/wp-php-standards": "@stable",
-                "phpunit/phpcov": "*"
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.7.0"
             },
             "type": "library",
             "autoload": {
@@ -1583,6 +2123,32 @@
             "scripts": {
                 "fix": [
                     "vendor/bin/phpcbf . --standard=Bluehost"
+                ],
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --pretty-print"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages --pretty-print"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-secure-passwords.pot ./languages"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-secure-passwords.pot --domain=wp-module-secure-passwords --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-secure-passwords/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=tests,vendor,wordpress,node_modules"
                 ],
                 "lint": [
                     "vendor/bin/phpcs . --standard=Bluehost -s"
@@ -1604,7 +2170,7 @@
                 }
             ],
             "description": "Prevents passwords exposed in data breaches from being used and encourages better password hygiene.",
-            "time": "2026-02-05T07:06:37+00:00"
+            "time": "2026-09-03T18:54:30+00:00"
         },
         {
             "name": "newfold-labs/wp-module-sso",
@@ -1690,6 +2256,83 @@
             ],
             "description": "Single sign-on functionality for Newfold WordPress sites.",
             "time": "2026-08-14T10:03:41+00:00"
+        },
+        {
+            "name": "newfold-labs/wp-module-survey",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/newfold-labs/wp-module-survey.git",
+                "reference": "100ae1c0fa54024ca70053d6c8ffdca956b29341"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/newfold-labs/wp-module-survey/zipball/100ae1c0fa54024ca70053d6c8ffdca956b29341",
+                "reference": "100ae1c0fa54024ca70053d6c8ffdca956b29341",
+                "shasum": ""
+            },
+            "require-dev": {
+                "johnpbloch/wordpress": "@stable",
+                "lucatume/wp-browser": "*",
+                "newfold-labs/wp-module-loader": "^1.1",
+                "newfold-labs/wp-php-standards": "^2.0",
+                "phpunit/phpcov": "*",
+                "wp-cli/i18n-command": "^2.7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "NewfoldLabs\\WP\\Module\\Survey\\": "includes"
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "scripts": {
+                "i18n": [
+                    "@i18n-pot",
+                    "@i18n-po",
+                    "@i18n-php",
+                    "@i18n-json"
+                ],
+                "i18n-ci-pre": [
+                    "@i18n-pot",
+                    "@i18n-po"
+                ],
+                "i18n-ci-post": [
+                    "@i18n-json",
+                    "@i18n-php"
+                ],
+                "i18n-json": [
+                    "rm -f languages/*.json && vendor/bin/wp i18n make-json ./languages --pretty-print --extensions=jsx"
+                ],
+                "i18n-php": [
+                    "vendor/bin/wp i18n make-php ./languages --pretty-print"
+                ],
+                "i18n-po": [
+                    "vendor/bin/wp i18n update-po ./languages/wp-module-survey.pot ./languages"
+                ],
+                "i18n-pot": [
+                    "vendor/bin/wp i18n make-pot . ./languages/wp-module-survey.pot --domain=wp-module-survey --headers='{\"Report-Msgid-Bugs-To\":\"https://github.com/newfold-labs/wp-module-survey/issues\",\"POT-Creation-Date\":\"2025-02-13T09:55:55+00:00\"}' --exclude=tests,build,vendor,wordpress,node_modules"
+                ],
+                "test": [
+                    "codecept run wpunit"
+                ],
+                "test-coverage": [
+                    "codecept run wpunit --coverage wpunit.cov && phpcov merge --php tests/_output/merged.cov --html tests/_output/html tests/_output && echo \"open tests/_output/html/index.html to view the report\""
+                ]
+            },
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "arunshenoy99",
+                    "email": "devarunshenoy99@gmail.com"
+                }
+            ],
+            "description": "A Newfold module to collect customer satisfaction feedback via surveys in the WordPress admin dashboard.",
+            "time": "2026-09-02T16:24:49+00:00"
         },
         {
             "name": "predis/predis",
@@ -3408,12 +4051,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "5ca495882179464e540e873757759e1ac532b828"
+                "reference": "55a9238f51c5449fdaa650fb03322dfca498a2e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/5ca495882179464e540e873757759e1ac532b828",
-                "reference": "5ca495882179464e540e873757759e1ac532b828",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/55a9238f51c5449fdaa650fb03322dfca498a2e5",
+                "reference": "55a9238f51c5449fdaa650fb03322dfca498a2e5",
                 "shasum": ""
             },
             "conflict": {
@@ -3453,6 +4096,7 @@
                 "andrewhaine/silverstripe-form-capture": ">=0.2,<=0.2.3|>=1,<1.0.2|>=2,<2.2.5",
                 "aoe/restler": "<1.7.1",
                 "apache-solr-for-typo3/solr": "<11.6.6|>=12,<12.1.4|>=13,<13.1.4",
+                "apache/thrift": "<0.24",
                 "apereo/phpcas": "<1.6",
                 "api-platform/core": "<4.1.30|>=4.2,<4.2.26|>=4.3,<4.3.12",
                 "api-platform/graphql": "<3.4.17|>=4,<4.0.22|>=4.1,<4.1.5",
@@ -3519,8 +4163,8 @@
                 "cachethq/cachet": "<2.5.1",
                 "cadmium-org/cadmium-cms": "<=0.4.9",
                 "cakephp/authentication": "<2.11.1|>=3,<3.3.6|>=4,<4.1.1",
-                "cakephp/cakephp": "<4.5.11|>=4.6,<4.6.4|>=5,<5.1.7|>=5.2,<5.2.13|>=5.3,<5.3.6",
-                "cakephp/database": ">=4.2,<4.2.12|>=4.3,<4.3.11|>=4.4,<4.4.10",
+                "cakephp/cakephp": "<4.5.12|>=4.6,<4.6.5|>=5,<5.1.10|>=5.2,<5.2.15|>=5.3,<5.3.7",
+                "cakephp/database": ">=4.2,<4.2.12|>=4.3,<4.3.11|>=4.4,<4.4.10|>=5.1,<5.1.10|>=5.2,<5.2.15|>=5.3,<5.3.7",
                 "cakephp/debug_kit": "<4.10.3|>=5,<5.2.4",
                 "cakephp/queue": ">=0.1.10,<2.3.1",
                 "cardgate/magento2": "<2.0.33",
@@ -3552,7 +4196,7 @@
                 "codingms/modules": "<7.10.4|>=8,<8.1.4",
                 "commerceteam/commerce": ">=0.9.6,<0.9.9",
                 "components/jquery": ">=1.0.3,<3.5",
-                "composer/composer": "<2.2.29|>=2.3,<2.10.2",
+                "composer/composer": "<2.2.30|>=2.3,<2.10.3",
                 "concrete5/concrete5": "<9.5.2",
                 "concrete5/core": "<8.5.8|>=9,<9.1",
                 "contao-components/colorbox": ">=1,<1.6.4.3-dev",
@@ -3700,7 +4344,7 @@
                 "feehi/feehicms": "<=2.1.1",
                 "fenom/fenom": "<=2.12.1",
                 "filament/actions": ">=3.2,<3.2.123|>=4,<=4.11.3|>=5,<=5.6.3",
-                "filament/filament": ">=3,<=3.3.51|>=4,<4.11.5|>=5,<5.6.5",
+                "filament/filament": ">=3,<=3.3.51|>=4,<4.12.6|>=5,<5.7.6",
                 "filament/forms": ">=3,<=3.3.52",
                 "filament/infolists": ">=3,<3.2.115|>=4,<=4.11.4|>=5,<=5.6.4",
                 "filament/tables": ">=3,<=3.3.50|>=4,<=4.11.4|>=5,<=5.6.4",
@@ -3752,7 +4396,7 @@
                 "getgrav/grav": "<=2.0.19",
                 "getgrav/grav-plugin-api": "<1.0.0.0-beta15",
                 "getgrav/grav-plugin-form": "<9.1",
-                "getkirby/cms": "<=4.9.3|>=5,<=5.4.3",
+                "getkirby/cms": "<4.9.5|>=5,<5.5.2",
                 "getkirby/kirby": "<3.9.8.3-dev|>=3.10,<3.10.1.2-dev|>=4,<4.7.1",
                 "getkirby/panel": "<2.5.14",
                 "getkirby/starterkit": "<=3.7.0.2",
@@ -3885,7 +4529,7 @@
                 "lavalite/cms": "<=10.1",
                 "lavitto/typo3-form-to-database": "<2.2.5|>=3,<3.2.2|>=4,<4.2.3|>=5,<5.0.2",
                 "lcobucci/jwt": ">=3.4,<3.4.6|>=4,<4.0.4|>=4.1,<4.1.5",
-                "league/commonmark": "<2.9",
+                "league/commonmark": "<2.10",
                 "league/flysystem": "<1.1.4|>=2,<2.1.1",
                 "league/oauth2-server": ">=8.3.2,<8.4.2|>=8.5,<8.5.3",
                 "leantime/leantime": "<3.3",
@@ -3897,7 +4541,7 @@
                 "limesurvey/limesurvey": "<=7.0.0.0-beta1",
                 "livehelperchat/livehelperchat": "<=3.91",
                 "livewire-filemanager/filemanager": "<=1.0.4",
-                "livewire/livewire": "<2.12.7|>=3.0.0.0-beta1,<3.6.4",
+                "livewire/livewire": "<2.12.7|>=3.0.0.0-beta1,<=3.8.2|>=4.0.0.0-beta1,<=4.3.3",
                 "livewire/volt": "<1.7",
                 "lms/routes": "<2.1.1",
                 "localizationteam/l10nmgr": "<7.4|>=8,<8.7|>=9,<9.2",
@@ -3905,6 +4549,7 @@
                 "lomkit/laravel-rest-api": "<2.13",
                 "luracast/restler": "<3.1",
                 "luyadev/yii-helpers": "<1.2.1",
+                "maatwebsite/excel": ">=3.1.8,<3.1.70",
                 "macropay-solutions/laravel-crud-wizard-free": "<3.4.17",
                 "maestroerror/php-heic-to-jpg": "<1.0.5",
                 "magento/community-edition": "<2.4.6.0-patch13|>=2.4.7.0-beta1,<2.4.7.0-patch8|>=2.4.8.0-beta1,<2.4.8.0-patch3|>=2.4.9.0-alpha1,<2.4.9.0-alpha3|==2.4.9",
@@ -3961,7 +4606,7 @@
                 "mobiledetect/mobiledetectlib": "<2.8.32",
                 "modx/revolution": "<=3.1",
                 "mojo42/jirafeau": "<4.4",
-                "mongodb/mongodb": ">=1,<1.9.2",
+                "mongodb/mongodb": "<1.21.4|>=2,<2.4.1",
                 "mongodb/mongodb-extension": "<1.21.2",
                 "monolog/monolog": ">=1.8,<1.12",
                 "moodle/moodle": "<4.5.9|>=5.0.0.0-beta,<5.0.5|>=5.1.0.0-beta,<5.1.2",
@@ -4104,6 +4749,7 @@
                 "pocketmine/raklib": ">=0.14,<0.14.6|>=0.15,<0.15.1",
                 "pontedilana/php-weasyprint": "<=2.5.1",
                 "poweradmin/poweradmin": "<4.2.5|>=4.3,<4.3.4",
+                "predis/predis": ">=3.0.0.0-RC1-dev,<3.3",
                 "pressbooks/pressbooks": "<5.18",
                 "prestashop/autoupgrade": ">=4,<4.10.1",
                 "prestashop/blockreassurance": "<=5.1.3",
@@ -4140,7 +4786,7 @@
                 "ralffreit/mfa-email": "<1.0.7|==2",
                 "rankmath/seo-by-rank-math": "<=1.0.95",
                 "rap2hpoutre/laravel-log-viewer": "<0.13",
-                "react/http": ">=0.7,<1.9",
+                "react/http": ">=0.6,<1.11.1",
                 "really-simple-plugins/complianz-gdpr": "<6.4.2",
                 "redaxo/source": "<5.21.1",
                 "remdex/livehelperchat": "<4.29",
@@ -4240,14 +4886,14 @@
                 "starcitizentools/short-description": ">=4,<4.0.1",
                 "starcitizentools/tabber-neue": ">=1.9.1,<2.7.2|>=3,<3.1.1",
                 "starcitizenwiki/embedvideo": "<=4",
-                "statamic/cms": "<5.74.3|>=6,<6.24.2",
+                "statamic/cms": "<5.74.3|>=6,<=6.30",
                 "stormpath/sdk": "<9.9.99",
-                "studio-42/elfinder": "<=2.1.67",
+                "studio-42/elfinder": "<2.1.70",
                 "studiomitte/friendlycaptcha": "<0.1.4",
                 "subhh/libconnect": "<7.0.8|>=8,<8.1",
                 "sukohi/surpass": "<1",
                 "sulu/form-bundle": ">=2,<2.5.3",
-                "sulu/sulu": "<=2.6.22|>=3,<=3.0.5",
+                "sulu/sulu": "<=2.6.24|>=3,<3.0.8",
                 "sumocoders/framework-user-bundle": "<1.4",
                 "superbig/craft-audit": "<3.0.2",
                 "svewap/a21glossary": "<=0.4.10",
@@ -4354,7 +5000,7 @@
                 "twig/twig": "<3.27",
                 "typicms/core": "<12.0.5|>=13,<13.0.9|>=14,<14.0.27|>=15,<15.0.29|>=16,<16.1.7",
                 "typo3/cms": "<9.5.29|>=10,<10.4.35|>=11,<11.5.23|>=12,<12.2",
-                "typo3/cms-backend": "<10.4.57|>=11,<11.5.51|>=12,<12.4.46|>=13,<13.4.31|>=14,<14.3.3",
+                "typo3/cms-backend": "<10.4.60|>=11,<11.5.54|>=12,<12.4.49|>=13,<13.4.35|>=14,<14.3.7",
                 "typo3/cms-belog": ">=10,<=10.4.47|>=11,<=11.5.41|>=12,<=12.4.24|>=13,<=13.4.2",
                 "typo3/cms-beuser": ">=9,<9.5.55|>=10,<10.4.54|>=11,<11.5.48|>=12,<12.4.37|>=13,<13.4.18",
                 "typo3/cms-core": "<10.4.57|>=11,<11.5.51|>=12,<12.4.46|>=13,<13.4.34|>=14,<14.3.6",
@@ -4368,7 +5014,7 @@
                 "typo3/cms-frontend": "<4.3.9|>=4.4,<4.4.5",
                 "typo3/cms-indexed-search": ">=10,<=10.4.47|>=11,<=11.5.41|>=12,<=12.4.24|>=13,<13.4.31|>=14,<14.3.3",
                 "typo3/cms-install": "<4.1.14|>=4.2,<4.2.16|>=4.3,<4.3.9|>=4.4,<4.4.5|>=12.2,<12.4.8|==13.4.2",
-                "typo3/cms-lowlevel": ">=11,<=11.5.41",
+                "typo3/cms-lowlevel": ">=11,<=11.5.41|>=14.2,<14.3.7",
                 "typo3/cms-recordlist": ">=11,<11.5.48",
                 "typo3/cms-recycler": "<10.4.57|>=11,<11.5.51|>=12,<12.4.46|>=13,<13.4.31|>=14,<14.3.3",
                 "typo3/cms-redirects": ">=10,<=10.4.54|>=11,<=11.5.48|>=12,<=12.4.40|>=13,<=13.4.22|>=14,<=14.0.1",
@@ -4414,7 +5060,7 @@
                 "web-feet/coastercms": "==5.5",
                 "web-token/jwt-bundle": "<3.4.10|>=4,<4.0.7|>=4.1,<4.1.7",
                 "web-token/jwt-experimental": "<4.1.7",
-                "web-token/jwt-framework": "<4.1.7",
+                "web-token/jwt-framework": "<3.4.10|>=4,<4.0.7|>=4.1,<4.1.7",
                 "web-token/jwt-library": "<3.4.10|>=4,<4.0.7|>=4.1,<4.1.7",
                 "web-tp3/wec_map": "<3.0.3",
                 "webbuilders-group/silverstripe-kapost-bridge": "<0.4",
@@ -4543,7 +5189,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-28T21:06:51+00:00"
+            "time": "2026-09-09T20:29:53+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
@@ -4819,6 +5465,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
+        "newfold-labs/wp-module-onboarding": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
