@@ -45,13 +45,14 @@
         "@axe-core/playwright": "^4.11.3",
         "@playwright/test": "^1.63.0",
         "@tailwindcss/forms": "^0.5.10",
+        "@wordpress/e2e-test-utils-playwright": "^1.54.0",
         "@wordpress/env": "^11.6.0",
         "@wordpress/scripts": "^31",
+        "ajv": "^8.17.1",
         "axe-core": "^4.11.3",
         "node-fetch": "^3.3.2",
         "tailwindcss": "^3.4.17",
-        "yaml-lint": "^1.7.0",
-        "ajv": "^8.17.1"
+        "yaml-lint": "^1.7.0"
     },
     "scripts": {
         "build": "wp-scripts build",
