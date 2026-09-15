@@ -1,7 +1,7 @@
 /**
- * Newfold/Bigrock Plugin-Specific Test Helpers
+ * Newfold/WebHostBox Plugin-Specific Test Helpers
  * 
- * Utilities for testing Newfold Labs modules and Bigrock-specific functionality.
+ * Utilities for testing Newfold Labs modules and WebHostBox-specific functionality.
  * Includes capabilities, coming soon, dashboard widgets, plugin-specific features,
  * and version compatibility checks for third-party plugin integrations.
  */
@@ -258,7 +258,7 @@ async function uninstallWooCommerce() {
 }
 
 /**
- * Set plugin capabilities (Bigrock-specific functionality)
+ * Set plugin capabilities (WebHostBox-specific functionality)
  * 
  * @param {Object} capabilities - Capabilities object
  * @param {number} expiration - Expiration time in seconds (default: 3600)
@@ -457,7 +457,7 @@ async function waitForDashboardWidgets(page, timeout = 10000) {
  * Assumes the plugin ID is known.
  *
  * @param {import('@playwright/test').Page} page - Playwright page object.
- * @param {string} pluginId - The ID of the plugin (e.g., 'bigrock_in').
+ * @param {string} pluginId - The ID of the plugin (e.g., 'webhostbox').
  * @param {string} path - The path within the plugin (e.g., '#/home').
  */
 async function navigateToPluginPage(page, pluginId, path = '') {
