@@ -6,8 +6,8 @@
  * Follows Playwright best practices for authentication and session management.
  */
 
+import { Admin, PageUtils } from '@wordpress/e2e-test-utils-playwright';
 import { readFileSync } from 'fs';
-import { Admin, PageUtils } from './wp-e2e-utils.mjs';
 
 /**
  * Check if user is already logged in to WordPress

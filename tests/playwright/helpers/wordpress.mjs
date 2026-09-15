@@ -7,8 +7,8 @@ import { execSync } from 'child_process';
  * permalinks, and basic WordPress operations.
  */
 
+import { Admin, PageUtils } from '@wordpress/e2e-test-utils-playwright';
 import utils from './utils.mjs';
-import { Admin, PageUtils } from './wp-e2e-utils.mjs';
 
 /** @type {string|undefined} */
 let pluginRoot;
