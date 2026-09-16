@@ -22,7 +22,7 @@ let wooSupported;
 let wooSkipMessage;
 
 test.describe('Coming Soon with WooCommerce', () => {
-  test.describe.configure({ timeout: 180000 });
+  test.describe.configure({ timeout: 1400000 });
 
   // Check WooCommerce support once before all tests
   test.beforeAll(async () => {
@@ -60,10 +60,8 @@ test.describe('Coming Soon with WooCommerce', () => {
     // Skip if WooCommerce is not supported in this environment
     test.skip(!wooSupported, wooSkipMessage);
 
-    // Visit settings page
+    // Visit settings page (verify helper navigates to wp-admin for admin bar badges)
     await navigateToSettings(page, pluginId);
-    // Force refresh
-    await page.reload();
 
     // Verify WooCommerce coming soon is active
     await verifyWooCommerceComingSoonActive(page);

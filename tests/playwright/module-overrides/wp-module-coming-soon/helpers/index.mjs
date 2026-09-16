@@ -1,6 +1,6 @@
 /**
  * Coming Soon Module Test Helpers for Playwright (WebHostBox override).
- * Adds WooCommerce option sync + admin reload waits for WP 6.9+ matrix jobs.
+ * Adds WooCommerce option sync + wp-admin navigation after sync for WP 6.9+ matrix jobs.
  */
 import { expect } from '@playwright/test';
 import { join, dirname } from 'path';
@@ -39,6 +39,40 @@ const {
 } = newfold;
 const removeWooCommerce = uninstallWooCommerce;
 
+const ADMIN_GOTO_OPTS = { waitUntil: 'domcontentloaded', timeout: 60_000 };
+
+/**
+ * @param {import('@playwright/test').Page} page
+ */
+async function waitForWpAdminWindow(page) {
+  await page.locator('body.wp-admin').waitFor({ state: 'attached', timeout: 30_000 });
+  await page.locator('#wpadminbar').waitFor({ state: 'visible', timeout: 30_000 });
+}
+
+/**
+ * wp-admin navigations often abort the `load` event (admin scripts, redirects). Use
+ * domcontentloaded and wait for admin chrome; tolerate ERR_ABORTED when the document still loads.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string} path - Path from site root (e.g. /wp-admin/index.php)
+ */
+async function gotoPath(page, path) {
+  try {
+    await page.goto(path, ADMIN_GOTO_OPTS);
+  } catch (error) {
+    const message = String(error);
+    if (!/ERR_ABORTED|frame was detached|NS_BINDING_ABORTED/i.test(message)) {
+      throw error;
+    }
+  }
+
+  if (path.includes('/wp-admin')) {
+    await waitForWpAdminWindow(page);
+  } else {
+    await page.locator('body').waitFor({ state: 'attached', timeout: 30_000 });
+  }
+}
+
 /**
  * Set coming soon option
  * 
@@ -54,7 +88,7 @@ async function setComingSoonOption(page, enabled, optionName = 'nfd_coming_soon'
     if (optionName === 'nfd_coming_soon') {
       await syncWooCommerceVisibilityOptions();
       if (page) {
-        await page.reload({ waitUntil: 'load' }).catch(() => {});
+        await navigateToWpAdmin(page);
       }
     }
   } catch (error) {
@@ -68,8 +102,8 @@ async function setComingSoonOption(page, enabled, optionName = 'nfd_coming_soon'
  * @param {import('@playwright/test').Page} page - Playwright page object
  * @param {string} pluginId - Plugin ID for URL construction
  */
-async function navigateToSettings(page, pluginId = 'bluehost') {
-  await page.goto(`/wp-admin/admin.php?page=${pluginId}#/settings/settings`);
+async function navigateToSettings(page, pluginId = 'webhostbox') {
+  await gotoPath(page, `/wp-admin/admin.php?page=${pluginId}#/settings/settings`);
 }
 
 /**
@@ -78,8 +112,8 @@ async function navigateToSettings(page, pluginId = 'bluehost') {
  * @param {import('@playwright/test').Page} page - Playwright page object
  * @param {string} pluginId - Plugin ID for URL construction
  */
-async function navigateToHome(page, pluginId = 'bluehost') {
-  await page.goto(`/wp-admin/admin.php?page=${pluginId}#/home`);
+async function navigateToHome(page, pluginId = 'webhostbox') {
+  await gotoPath(page, `/wp-admin/admin.php?page=${pluginId}#/home`);
 }
 
 /**
@@ -88,7 +122,7 @@ async function navigateToHome(page, pluginId = 'bluehost') {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function navigateToWpAdmin(page) {
-  await page.goto('/wp-admin/index.php');
+  await gotoPath(page, '/wp-admin/index.php');
 }
 
 /**
@@ -97,7 +131,7 @@ async function navigateToWpAdmin(page) {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function navigateToFrontend(page) {
-  await page.goto('/');
+  await gotoPath(page, '/');
 }
 
 /**
@@ -178,26 +212,23 @@ function getNotifications(page) {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function enableComingSoon(page) {
-  await page.goto('/wp-admin/index.php');
-  
+  await navigateToWpAdmin(page);
+
   const enableButton = page.locator('[data-test-id="nfd-coming-soon-enable"]');
   const disableButton = page.locator('[data-test-id="nfd-coming-soon-disable"]');
-  
+
   // Wait for either button to be visible (widget loaded)
   await expect(enableButton.or(disableButton)).toBeVisible({ timeout: 20000 });
-  
+
   // If enable button is visible, coming soon is currently disabled - click to enable
   if (await enableButton.isVisible()) {
     await enableButton.click();
-    // Widget JS calls `window.location.reload()` after the API resolves; wait for load
-    // before asserting so slower runners do not race the reload.
-    await page.waitForLoadState( 'load' );
-    // Wait for disable button to appear (confirms state change)
+    // Widget triggers a full page reload; wait for updated widget state.
     await expect(disableButton).toBeVisible({ timeout: 20000 });
   }
 
   await syncWooCommerceVisibilityOptions();
-  await page.reload({ waitUntil: 'load' });
+  await navigateToWpAdmin(page);
   await waitForWooCommerceAdminBarBadge(page).catch(() => {});
 }
 
@@ -208,24 +239,22 @@ async function enableComingSoon(page) {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function disableComingSoon(page) {
-  await page.goto('/wp-admin/index.php');
-  
+  await navigateToWpAdmin(page);
+
   const enableButton = page.locator('[data-test-id="nfd-coming-soon-enable"]');
   const disableButton = page.locator('[data-test-id="nfd-coming-soon-disable"]');
-  
+
   // Wait for either button to be visible (widget loaded)
   await expect(enableButton.or(disableButton)).toBeVisible({ timeout: 20000 });
-  
+
   // If disable button is visible, coming soon is currently enabled - click to disable
   if (await disableButton.isVisible()) {
     await disableButton.click();
-    await page.waitForLoadState( 'load' );
-    // Wait for enable button to appear (confirms state change)
     await expect(enableButton).toBeVisible({ timeout: 20000 });
   }
 
   await syncWooCommerceVisibilityOptions();
-  await page.reload({ waitUntil: 'load' });
+  await navigateToWpAdmin(page);
   await waitForWooCommerceAdminBarBadge(page).catch(() => {});
 }
 
@@ -281,7 +310,7 @@ async function verifyComingSoonInactive(page) {
  */
 async function verifyWooCommerceComingSoonActive(page) {
   await syncWooCommerceVisibilityOptions();
-  await page.reload({ waitUntil: 'load' });
+  await navigateToWpAdmin(page);
   await waitForWooCommerceAdminBarBadge(page);
 
   const ourBadge = getAdminBarBadge(page);
@@ -304,7 +333,7 @@ async function verifyWooCommerceComingSoonActive(page) {
  */
 async function verifyWooCommerceComingSoonInactive(page) {
   await syncWooCommerceVisibilityOptions();
-  await page.reload({ waitUntil: 'load' });
+  await navigateToWpAdmin(page);
   await waitForWooCommerceAdminBarBadge(page);
 
   const liveBadge = page.locator('#wp-toolbar .woocommerce-site-status-badge-live a.ab-item');
@@ -383,7 +412,7 @@ async function verifySiteLiveFrontend(page) {
  */
 async function verifySitePreviewWarningHidden(page) {
   await syncWooCommerceVisibilityOptions();
-  await page.reload({ waitUntil: 'load' });
+  await navigateToFrontend(page);
 
   const warning = getSitePreviewWarning(page);
   await expect(warning).toHaveCount(0, { timeout: 20000 });
@@ -395,7 +424,7 @@ async function verifySitePreviewWarningHidden(page) {
  * @returns {string} App class selector
  */
 function getAppClass() {
-  const appId = process.env.APP_ID || 'bluehost';
+  const appId = process.env.APP_ID || 'webhostbox';
   return `.${appId}`;
 }
 
