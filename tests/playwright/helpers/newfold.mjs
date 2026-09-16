@@ -203,13 +203,64 @@ async function isPluginActive(slug) {
 }
 
 /**
+ * Mirror nfd_coming_soon into WooCommerce site-visibility options (wp-cli).
+ * The coming-soon module only syncs when woocommerce_* options already exist.
+ */
+async function syncWooCommerceVisibilityOptions() {
+  await wordpress.wpCli('option update woocommerce_store_pages_only no', {
+    failOnNonZeroExit: false,
+  });
+
+  const nfdRaw = await wordpress.wpCli('option get nfd_coming_soon', {
+    failOnNonZeroExit: false,
+  });
+  const nfdEnabled =
+    !wordpress.isWpCliFailure(nfdRaw) &&
+    ['1', 'true', 'yes'].includes(String(nfdRaw).trim().toLowerCase());
+
+  await wordpress.wpCli(
+    `option update woocommerce_coming_soon ${nfdEnabled ? 'yes' : 'no'}`,
+    { failOnNonZeroExit: false },
+  );
+}
+
+/**
+ * Wait for WooCommerce's admin bar site-visibility badge after a full admin load.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {number} [timeoutMs]
+ */
+async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 30000) {
+  await page.waitForSelector('#wp-admin-bar-woocommerce-site-visibility-badge', {
+    state: 'attached',
+    timeout: timeoutMs,
+  });
+}
+
+/**
  * Install and activate WooCommerce plugin.
  * Callers that need to know whether WooCommerce is expected to work in the current
  * environment first should check `supportsWoo()` above.
+ *
+ * @param {import('@playwright/test').Page} [page] When provided, loads wp-admin and waits
+ *   for Woo's admin bar badge (helps WP 6.9+ where visibility UI initializes after install).
  */
-async function installWooCommerce() {
+async function installWooCommerce(page) {
   try {
     await wordpress.wpCli('plugin install woocommerce --activate');
+    await syncWooCommerceVisibilityOptions();
+
+    if (page) {
+      await page.goto('/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
+      await page.waitForLoadState('load');
+      await waitForWooCommerceAdminBarBadge(page).catch(() => {
+        utils.fancyLog(
+          'WooCommerce admin bar badge not detected after install; continuing.',
+          100,
+          'yellow',
+        );
+      });
+    }
   } catch (error) {
     utils.fancyLog('Failed to install WooCommerce:' + error.message, 100, 'yellow');
   }
@@ -518,6 +569,8 @@ export default {
 
   // WooCommerce / Companion Plugin Management
   installWooCommerce,
+  syncWooCommerceVisibilityOptions,
+  waitForWooCommerceAdminBarBadge,
   isWooCommerceActive,
   uninstallWooCommerce,
 
