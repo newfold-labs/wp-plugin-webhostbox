@@ -16,7 +16,10 @@ import utils from './utils.mjs';
  */
 const PLUGIN_REQUIREMENTS = {
   // https://wordpress.org/plugins/woocommerce/
-  woocommerce: { minWp: '6.9.0', minPhp: '7.4.0' },
+  // minWp tracks WooCommerce's own "Requires at least" (11.1.0 → WP 7.0). On older WP,
+  // `wp plugin install woocommerce` is rejected outright, so the Woo suites must skip.
+  // Check with: curl -s https://api.wordpress.org/plugins/info/1.0/woocommerce.json | jq .requires
+  woocommerce: { minWp: '7.0.0', minPhp: '7.4.0' },
   // https://wordpress.org/plugins/jetpack/
   jetpack: { minWp: '6.9.0', minPhp: '7.2.0' },
   // https://wordpress.org/plugins/wordpress-seo/
@@ -124,13 +127,66 @@ async function supportsPlugin(pluginKey) {
          satisfiesMin(phpVersion, requirements.minPhp);
 }
 
+/** Cached WooCommerce "Requires at least" lookup (null when unavailable). */
+let _wooWpRequirement;
+
 /**
- * Check if current environment supports WooCommerce
- * Requires: WP >= 6.8.0, PHP >= 7.4.0
+ * WooCommerce's current "Requires at least" WordPress version, from the plugin API.
+ *
+ * WooCommerce raises this over time while the CI matrix pins older WordPress. On a WP
+ * below it, `wp plugin install woocommerce` is refused outright, so reading the live
+ * value keeps the Woo suites skipping (instead of failing) without hand-editing
+ * PLUGIN_REQUIREMENTS after every WooCommerce release.
+ *
+ * @returns {Promise<string|null>} e.g. '7.0', or null when the API is unreachable
+ */
+async function getWooCommerceWpRequirement() {
+  if (undefined !== _wooWpRequirement) {
+    return _wooWpRequirement;
+  }
+
+  try {
+    const response = await fetch(
+      'https://api.wordpress.org/plugins/info/1.0/woocommerce.json',
+      { signal: AbortSignal.timeout(5000) },
+    );
+    const { requires } = await response.json();
+    _wooWpRequirement = requires || null;
+  } catch (error) {
+    // Offline or blocked: fall back to the static PLUGIN_REQUIREMENTS floor.
+    _wooWpRequirement = null;
+  }
+
+  return _wooWpRequirement;
+}
+
+/**
+ * The WordPress version WooCommerce needs here: the higher of our static floor and
+ * WooCommerce's own current requirement.
+ *
+ * @returns {Promise<string>}
+ */
+async function getWooCommerceMinWp() {
+  const staticMin = PLUGIN_REQUIREMENTS.woocommerce.minWp;
+  const declared = await getWooCommerceWpRequirement();
+
+  return declared && !satisfiesMin(staticMin, declared) ? declared : staticMin;
+}
+
+/**
+ * Check if current environment supports WooCommerce.
+ * Combines our PHP/WP floor with WooCommerce's live "Requires at least".
+ *
  * @returns {Promise<boolean>}
  */
 async function supportsWoo() {
-  return supportsPlugin('woocommerce');
+  if (!(await supportsPlugin('woocommerce'))) {
+    return false;
+  }
+
+  const { wpVersion } = await getEnvironmentVersions();
+
+  return satisfiesMin(wpVersion, await getWooCommerceMinWp());
 }
 
 /**
@@ -169,8 +225,10 @@ async function supportsWonderTheme() {
 async function getSkipMessage(pluginKey) {
   const requirements = PLUGIN_REQUIREMENTS[pluginKey];
   const { wpVersion, phpVersion } = await getEnvironmentVersions();
-  
-  return `Skipping: ${pluginKey} requires WP >=${requirements.minWp} & PHP >=${requirements.minPhp}, ` +
+  const minWp =
+    'woocommerce' === pluginKey ? await getWooCommerceMinWp() : requirements.minWp;
+
+  return `Skipping: ${pluginKey} requires WP >=${minWp} & PHP >=${requirements.minPhp}, ` +
          `current: WP ${wpVersion} & PHP ${phpVersion}`;
 }
 
@@ -293,18 +351,36 @@ async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 15000) {
  * No-op when WooCommerce is already active, so suites can call this per run without
  * paying for a reinstall. Callers that need to know whether WooCommerce is expected to
  * work in the current environment first should check `supportsWoo()` above.
+ *
+ * Reports the outcome instead of swallowing it: a silent failure here used to surface
+ * much later as an unexplained wait for WooCommerce's admin bar badge. Callers should
+ * skip (not fail) when `ok` is false, since no WooCommerce assertion can pass without it.
+ *
+ * @returns {Promise<{ok: boolean, reason?: string}>}
  */
 async function installWooCommerce() {
-  try {
-    if (await isWooCommerceActive()) {
-      return;
-    }
-
-    await wordpress.wpCli('plugin install woocommerce --activate');
-    await syncWooCommerceVisibilityOptions();
-  } catch (error) {
-    utils.fancyLog('Failed to install WooCommerce:' + error.message, 100, 'yellow');
+  if (await isWooCommerceActive()) {
+    return { ok: true };
   }
+
+  const result = await wordpress.wpCli('plugin install woocommerce --activate', {
+    failOnNonZeroExit: false,
+  });
+
+  if (await isWooCommerceActive()) {
+    await syncWooCommerceVisibilityOptions();
+    return { ok: true };
+  }
+
+  const { wpVersion, phpVersion } = await getEnvironmentVersions();
+  const detail = wordpress.formatWpCliResult(result);
+  const reason =
+    `Skipping: WooCommerce could not be activated on WP ${wpVersion} / PHP ${phpVersion} ` +
+    `(needs WP >=${await getWooCommerceMinWp()}). WP-CLI said: ${detail}`;
+
+  utils.fancyLog(`⚠ ${reason}`, 400, 'yellow');
+
+  return { ok: false, reason };
 }
 
 /**
@@ -603,6 +679,8 @@ export default {
   PLUGIN_REQUIREMENTS,
   supportsPlugin,
   supportsWoo,
+  getWooCommerceWpRequirement,
+  getWooCommerceMinWp,
   supportsJetpack,
   supportsYoast,
   supportsWonderTheme,

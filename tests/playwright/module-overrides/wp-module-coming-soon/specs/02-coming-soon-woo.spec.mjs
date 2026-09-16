@@ -37,7 +37,15 @@ test.describe('Coming Soon with WooCommerce', () => {
       return;
     }
 
-    await installWooCommerce();
+    // A WooCommerce release can raise its "Requires at least" past the WP version under
+    // test; there is nothing to assert then, so skip rather than fail.
+    const install = await installWooCommerce();
+    if (!install.ok) {
+      wooSupported = false;
+      wooSkipMessage = install.reason;
+      return;
+    }
+
     await newfold.primeComingSoonState(true);
 
     const context = await browser.newContext();
