@@ -34,12 +34,14 @@ const { setCapability } = newfold;
 const {
   installWooCommerce,
   uninstallWooCommerce,
-  syncWooCommerceVisibilityOptions,
   waitForWooCommerceAdminBarBadge,
 } = newfold;
 const removeWooCommerce = uninstallWooCommerce;
 
 const ADMIN_GOTO_OPTS = { waitUntil: 'domcontentloaded', timeout: 60_000 };
+
+/** Coming-soon widget buttons trigger a wp-admin reload before the new state renders. */
+const WIDGET_RELOAD_TIMEOUT = 60_000;
 
 /**
  * @param {import('@playwright/test').Page} page
@@ -76,7 +78,7 @@ async function gotoPath(page, path) {
 /**
  * Set coming soon option
  * 
- * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {import('@playwright/test').Page|null} page - Unused; kept for signature parity
  * @param {boolean} enabled - Whether coming soon should be enabled
  * @param {string} optionName - Option name (default: 'nfd_coming_soon')
  */
@@ -85,12 +87,6 @@ async function setComingSoonOption(page, enabled, optionName = 'nfd_coming_soon'
     // Convert boolean to WordPress option format (1/0)
     const value = enabled ? '1' : '0';
     await wordpress.setOption(optionName, value);
-    if (optionName === 'nfd_coming_soon') {
-      await syncWooCommerceVisibilityOptions();
-      if (page) {
-        await navigateToWpAdmin(page);
-      }
-    }
   } catch (error) {
     fancyLog(`Failed to set ${optionName}:` + error.message, 55, 'yellow');
   }
@@ -223,13 +219,10 @@ async function enableComingSoon(page) {
   // If enable button is visible, coming soon is currently disabled - click to enable
   if (await enableButton.isVisible()) {
     await enableButton.click();
-    // Widget triggers a full page reload; wait for updated widget state.
-    await expect(disableButton).toBeVisible({ timeout: 20000 });
+    // The widget reloads wp-admin once the REST call resolves, and a full dashboard load
+    // takes ~15s on wp-env, so allow for the pending navigation plus the reload.
+    await expect(disableButton).toBeVisible({ timeout: WIDGET_RELOAD_TIMEOUT });
   }
-
-  await syncWooCommerceVisibilityOptions();
-  await navigateToWpAdmin(page);
-  await waitForWooCommerceAdminBarBadge(page).catch(() => {});
 }
 
 /**
@@ -250,12 +243,8 @@ async function disableComingSoon(page) {
   // If disable button is visible, coming soon is currently enabled - click to disable
   if (await disableButton.isVisible()) {
     await disableButton.click();
-    await expect(enableButton).toBeVisible({ timeout: 20000 });
+    await expect(enableButton).toBeVisible({ timeout: WIDGET_RELOAD_TIMEOUT });
   }
-
-  await syncWooCommerceVisibilityOptions();
-  await navigateToWpAdmin(page);
-  await waitForWooCommerceAdminBarBadge(page).catch(() => {});
 }
 
 /**
@@ -309,8 +298,6 @@ async function verifyComingSoonInactive(page) {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function verifyWooCommerceComingSoonActive(page) {
-  await syncWooCommerceVisibilityOptions();
-  await navigateToWpAdmin(page);
   await waitForWooCommerceAdminBarBadge(page);
 
   const ourBadge = getAdminBarBadge(page);
@@ -332,8 +319,6 @@ async function verifyWooCommerceComingSoonActive(page) {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function verifyWooCommerceComingSoonInactive(page) {
-  await syncWooCommerceVisibilityOptions();
-  await navigateToWpAdmin(page);
   await waitForWooCommerceAdminBarBadge(page);
 
   const liveBadge = page.locator('#wp-toolbar .woocommerce-site-status-badge-live a.ab-item');
@@ -411,7 +396,6 @@ async function verifySiteLiveFrontend(page) {
  * @param {import('@playwright/test').Page} page - Playwright page object
  */
 async function verifySitePreviewWarningHidden(page) {
-  await syncWooCommerceVisibilityOptions();
   await navigateToFrontend(page);
 
   const warning = getSitePreviewWarning(page);

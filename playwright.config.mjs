@@ -82,13 +82,11 @@ export default defineConfig({
     timeout: 120 * 1000, // 2 minutes
   },
   timeout: 120 * 1000, // 2 minutes
-  expect: {
-    timeout: 10 * 1000, // 10 seconds
-  },
   retries: process.env.CI ? 1 : 1,
   workers: process.env.CI ? 1 : 1, // Use default (number of CPU cores) for local, 1 for CI
   outputDir: 'tests/playwright/test-results',
   expect: {
+    timeout: 10 * 1000, // 10 seconds
     toHaveScreenshot: {
       maxDiffPixels: 100,
       pathTemplate: '{testDir}/screenshots{/projectName}/{testFilePath}/{arg}{ext}',

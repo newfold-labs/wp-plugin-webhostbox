@@ -3,10 +3,8 @@ import {
   auth,
   newfold,
   installWooCommerce,
-  setComingSoonOption,
   navigateToWpAdmin,
   navigateToSettings,
-  navigateToFrontend,
   verifyWooCommerceComingSoonActive,
   verifyWooCommerceComingSoonInactive,
   enableComingSoon,
@@ -15,59 +13,60 @@ import {
 } from '../helpers';
 
 // Use environment variable to resolve plugin helpers
-const pluginId = process.env.PLUGIN_ID || 'webhostbox';
+const pluginId = process.env.PLUGIN_ID || 'bluehost';
 
 // Cache WooCommerce support check (set in beforeAll, used in tests)
 let wooSupported;
 let wooSkipMessage;
 
-test.describe('Coming Soon with WooCommerce', () => {
-  test.describe.configure({ timeout: 1400000 });
+// Shared across the suite: WooCommerce install, options and login are all one-time costs,
+// and every WP-CLI call boots WordPress in the container.
+let page;
 
-  // Check WooCommerce support once before all tests
-  test.beforeAll(async () => {
+test.describe('Coming Soon with WooCommerce', () => {
+  test.describe.configure({ mode: 'serial', timeout: 120000 });
+
+  test.beforeAll(async ({ browser }) => {
+    // Container WP-CLI plus a first admin load: generous so a slow Docker host does not
+    // abort setup and force the whole serial group to retry.
+    test.setTimeout(180000);
+
     wooSupported = await newfold.supportsWoo();
     if (!wooSupported) {
       wooSkipMessage = await newfold.getSkipMessage('woocommerce');
+      return;
     }
-  });
 
-  test.beforeEach(async ({ page }) => {
-    // Login to WordPress
+    await installWooCommerce();
+    await newfold.primeComingSoonState(true);
+
+    const context = await browser.newContext();
+    page = await context.newPage();
     await auth.loginToWordPress(page);
-
-    // Only install WooCommerce if environment supports it
-    if (wooSupported) {
-      // Activate WooCommerce
-      await installWooCommerce(page);
-
-      // Set coming soon options
-      await setComingSoonOption(page, true, 'mm_coming_soon');
-      await setComingSoonOption(page, true, 'nfd_coming_soon');
-
-      // Navigate to WordPress admin
-      await navigateToWpAdmin(page);
-    }
+    await navigateToWpAdmin(page);
   });
 
-  // Intentionally no afterAll teardown: this is the last coming-soon suite to
+  // Intentionally no WooCommerce teardown: this is the last coming-soon suite to
   // run (see numeric filename prefix), and deactivating/uninstalling
   // WooCommerce here fatals other plugins in the shared brand-plugin test
   // environment that assume WooCommerce stays active once installed, which
   // in turn breaks wp-login.php for every test that runs afterward.
+  test.afterAll(async () => {
+    await page?.context().close();
+  });
 
-  test("Replace our admin bar site status badge with WooCommerce's when active", async ({ page }) => {
+  test("Replace our admin bar site status badge with WooCommerce's when active", async () => {
     // Skip if WooCommerce is not supported in this environment
     test.skip(!wooSupported, wooSkipMessage);
 
-    // Visit settings page (verify helper navigates to wp-admin for admin bar badges)
+    // Visit settings page: the badge is rendered on every admin screen
     await navigateToSettings(page, pluginId);
 
     // Verify WooCommerce coming soon is active
     await verifyWooCommerceComingSoonActive(page);
   });
 
-  test('Our plugin settings should toggle WooCommerce admin bar badge', async ({ page }) => {
+  test('Our plugin settings should toggle WooCommerce admin bar badge', async () => {
     // Skip if WooCommerce is not supported in this environment
     test.skip(!wooSupported, wooSkipMessage);
 
@@ -86,17 +85,11 @@ test.describe('Coming Soon with WooCommerce', () => {
     await expect(comingSoonBadge).toContainText('Coming soon');
   });
 
-  test('Hide our site preview notice when WooCommerce is active', async ({ page }) => {
+  test('Hide our site preview notice when WooCommerce is active', async () => {
     // Skip if WooCommerce is not supported in this environment
     test.skip(!wooSupported, wooSkipMessage);
 
-    // Visit settings page
-    await navigateToSettings(page, pluginId);
-
-    // Visit frontend
-    await navigateToFrontend(page);
-    
-    // Verify site preview warning is hidden
+    // Verify site preview warning is hidden (helper visits the frontend)
     await verifySitePreviewWarningHidden(page);
   });
 });

@@ -1,32 +1,7 @@
 [
   {
-    "name": "newfold-labs/wp-plugin-webhostbox",
-    "testDir": "./tests/playwright/specs",
-    "testMatch": "**/*.spec.js"
-  },
-  {
-    "name": "newfold-labs/wp-module-patterns",
-    "testDir": "./vendor/newfold-labs/wp-module-patterns/tests/playwright/specs",
-    "testMatch": "*.spec.{js,mjs}"
-  },
-  {
-    "name": "newfold-labs/wp-module-onboarding",
-    "testDir": "./vendor/newfold-labs/wp-module-onboarding/tests/playwright/specs",
-    "testMatch": "*.spec.{js,mjs}"
-  },
-  {
-    "name": "newfold-labs/wp-module-performance",
-    "testDir": "./vendor/newfold-labs/wp-module-performance/tests/playwright/specs",
-    "testMatch": "*.spec.{js,mjs}"
-  },
-  {
     "name": "newfold-labs/wp-module-coming-soon",
     "testDir": "./vendor/newfold-labs/wp-module-coming-soon/tests/playwright/specs",
-    "testMatch": "*.spec.{js,mjs}"
-  },
-  {
-    "name": "newfold-labs/wp-module-marketplace",
-    "testDir": "./vendor/newfold-labs/wp-module-marketplace/tests/playwright/specs",
     "testMatch": "*.spec.{js,mjs}"
   }
 ]

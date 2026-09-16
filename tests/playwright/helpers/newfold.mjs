@@ -202,35 +202,86 @@ async function isPluginActive(slug) {
   return (await wordpress.wpCli(`plugin is-active ${slug} --skip-plugins`)) === 0;
 }
 
+/** WP-CLI user for `eval` calls that need capability checks to resolve. */
+const wpCliUser = () => process.env.WP_ADMIN_USERNAME || 'admin';
+
 /**
  * Mirror nfd_coming_soon into WooCommerce site-visibility options (wp-cli).
  * The coming-soon module only syncs when woocommerce_* options already exist.
+ *
+ * Done in a single `eval` because every `wp` invocation boots WordPress in the wp-env
+ * container, which costs several seconds each on a plugin stack this size.
  */
 async function syncWooCommerceVisibilityOptions() {
-  await wordpress.wpCli('option update woocommerce_store_pages_only no', {
-    failOnNonZeroExit: false,
-  });
-
-  const nfdRaw = await wordpress.wpCli('option get nfd_coming_soon', {
-    failOnNonZeroExit: false,
-  });
-  const nfdEnabled =
-    !wordpress.isWpCliFailure(nfdRaw) &&
-    ['1', 'true', 'yes'].includes(String(nfdRaw).trim().toLowerCase());
-
   await wordpress.wpCli(
-    `option update woocommerce_coming_soon ${nfdEnabled ? 'yes' : 'no'}`,
+    `eval '${[
+      '$cs = wp_validate_boolean( get_option( "nfd_coming_soon" ) );',
+      'update_option( "woocommerce_store_pages_only", "no" );',
+      'update_option( "woocommerce_coming_soon", $cs ? "yes" : "no" );',
+    ].join(' ')}' --user=${wpCliUser()}`,
     { failOnNonZeroExit: false },
   );
 }
 
 /**
- * Wait for WooCommerce's admin bar site-visibility badge after a full admin load.
+ * Set the brand and WooCommerce coming-soon options in one WP-CLI call, and return the
+ * gates WooCommerce checks before rendering its site-visibility badge.
+ *
+ * @param {boolean} [comingSoon] Desired coming soon state
+ * @returns {Promise<Object|null>} Parsed gate values, or null when the call failed
+ */
+async function primeComingSoonState(comingSoon = true) {
+  const value = comingSoon ? '1' : '0';
+  const php = [
+    `$cs = ${value};`,
+    'update_option( "mm_coming_soon", $cs );',
+    'update_option( "nfd_coming_soon", $cs );',
+    'update_option( "woocommerce_store_pages_only", "no" );',
+    'update_option( "woocommerce_coming_soon", $cs ? "yes" : "no" );',
+    'echo wp_json_encode( array(',
+    '"woo_active" => class_exists( "woocommerce" ),',
+    '"nfd_coming_soon" => get_option( "nfd_coming_soon" ),',
+    '"woocommerce_coming_soon" => get_option( "woocommerce_coming_soon" ),',
+    '"woocommerce_store_pages_only" => get_option( "woocommerce_store_pages_only" ),',
+    '"badge_feature" => get_option( "woocommerce_feature_site_visibility_badge_enabled", "yes" ),',
+    '"manage_woocommerce" => current_user_can( "manage_woocommerce" ),',
+    ') );',
+  ].join(' ');
+
+  const raw = await wordpress.wpCli(`eval '${php}' --user=${wpCliUser()}`, {
+    failOnNonZeroExit: false,
+  });
+
+  if (wordpress.isWpCliFailure(raw)) {
+    utils.fancyLog(`⚠ Could not prime coming soon state: ${raw}`, 200, 'yellow');
+    return null;
+  }
+
+  // wp-env can wrap command output with its own status lines, so pick out the JSON payload.
+  const json = String(raw).match(/\{[\s\S]*\}/);
+
+  try {
+    const gates = JSON.parse(json[0]);
+    utils.fancyLog(`🔎 Woo badge gates: ${JSON.stringify(gates)}`, 250, 'gray');
+    return gates;
+  } catch (error) {
+    utils.fancyLog(`⚠ Unexpected coming soon state output: ${raw}`, 200, 'yellow');
+    return null;
+  }
+}
+
+/**
+ * Wait for WooCommerce's admin bar site-visibility badge.
+ *
+ * WooCommerce renders this node server-side on the same request as the page
+ * (ComingSoonAdminBarBadge, admin_bar_menu priority 31), so it either arrives with the
+ * document or never does. A long timeout only delays a certain failure — use
+ * `logWooCommerceBadgeDiagnostics()` to find out which gate rejected it.
  *
  * @param {import('@playwright/test').Page} page
  * @param {number} [timeoutMs]
  */
-async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 120000) {
+async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 15000) {
   await page.waitForSelector('#wp-admin-bar-woocommerce-site-visibility-badge', {
     state: 'attached',
     timeout: timeoutMs,
@@ -238,29 +289,19 @@ async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 120000) {
 }
 
 /**
- * Install and activate WooCommerce plugin.
- * Callers that need to know whether WooCommerce is expected to work in the current
- * environment first should check `supportsWoo()` above.
- *
- * @param {import('@playwright/test').Page} [page] When provided, loads wp-admin and waits
- *   for Woo's admin bar badge (helps WP 6.9+ where visibility UI initializes after install).
+ * Install and activate WooCommerce plugin (WP-CLI only; callers own navigation).
+ * No-op when WooCommerce is already active, so suites can call this per run without
+ * paying for a reinstall. Callers that need to know whether WooCommerce is expected to
+ * work in the current environment first should check `supportsWoo()` above.
  */
-async function installWooCommerce(page) {
+async function installWooCommerce() {
   try {
+    if (await isWooCommerceActive()) {
+      return;
+    }
+
     await wordpress.wpCli('plugin install woocommerce --activate');
     await syncWooCommerceVisibilityOptions();
-
-    if (page) {
-      await page.goto('/wp-admin/index.php', { waitUntil: 'domcontentloaded' });
-      await page.waitForLoadState('load');
-      await waitForWooCommerceAdminBarBadge(page).catch(() => {
-        utils.fancyLog(
-          'WooCommerce admin bar badge not detected after install; continuing.',
-          100,
-          'yellow',
-        );
-      });
-    }
   } catch (error) {
     utils.fancyLog('Failed to install WooCommerce:' + error.message, 100, 'yellow');
   }
@@ -570,6 +611,7 @@ export default {
   // WooCommerce / Companion Plugin Management
   installWooCommerce,
   syncWooCommerceVisibilityOptions,
+  primeComingSoonState,
   waitForWooCommerceAdminBarBadge,
   isWooCommerceActive,
   uninstallWooCommerce,
