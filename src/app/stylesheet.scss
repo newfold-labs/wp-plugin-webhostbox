@@ -1,16 +1,16 @@
 :root {
     // Primary (Red Brand Colors)
-    --color-primary: #3498DB;
+    --color-primary: #3498DB;Primary--color-primary
     --color-primary-dark: #2980B9;
     --color-primary-light: #5DADE2;
     --color-primary-lighter: #D6EAF8;
     // Secondary (Neutral Grays)
-    --color-secondary: #1F2937;
+    --color-secondary: #1F2937;Secondary--color-secondary
     --color-secondary-dark: #111827;
     --color-secondary-light: #4B5563;
     --color-secondary-lighter: #F3F4F6;
     // UI
-    --color-title: #1F2937;
+    --color-title: #1F2937;UI--color-title
     --color-text: #374151;
     --color-link: #BD5800;
     --color-border: rgba(0, 0, 0, 0.1);
@@ -18,16 +18,16 @@
     --color-warning: #EA580C;
     --color-error: #DC2626;
     // Contrast
-    --color-white: #FFFFFF;
+    --color-white: #FFF;Contrast--color-white
     --color-off-white: #F5F6F8;
-    --color-black: #000000;
+    --color-black: #000;
     --color-success-contrast: #DCFCE7;
     --color-warning-contrast: #FFEDD5;
     --color-error-contrast: #FEE2E2;
     --color-canvas: #FDFDFD;
 
     // NFD Module Overrides (wp-module-performance, etc.)
-    --nfd-color-primary: #3498DB;
+    --nfd-color-primary: #3498DB;NFDModuleOverrides--nfd-color-primary
     --nfd-color-primary-dark: #2980B9;
     --nfd-color-primary-light: #5DADE2;
     --nfd-color-primary-lighter: #D6EAF8;
@@ -41,6 +41,7 @@
 
 // WebHostBox Brand Override - Higher specificity to override module styles
 html{
+
     .nfd-root,
     body .nfd-root {
         --nfd-color-primary: #3498DB !important;
@@ -57,6 +58,7 @@ html{
 }
 
 html {
+
     @media screen and (min-width: 782px) {
         overflow: -moz-scrollbars-vertical;
         overflow-y: scroll;
@@ -75,6 +77,7 @@ body.toplevel_page_webhostbox {
     }
 
     @media screen and (max-width:782px) {
+
         .wp-responsive-open #wpbody {
             right: -190px; // only when mobile admin menu open
         }
@@ -89,6 +92,7 @@ body.toplevel_page_webhostbox {
     }
 
     #wpadminbar .ab-top-menu {
+
         li {
             transition: opacity .33s ease;
         }
@@ -172,7 +176,7 @@ body.toplevel_page_webhostbox {
         white-space: nowrap;
 
         .dashicons,
-        .dashicons-before:before {
+        .dashicons-before::before {
             transition: all .25s ease;
         }
 
@@ -195,6 +199,7 @@ body.toplevel_page_webhostbox {
 
         &:last-child {
             padding-right: 1rem;
+
             /* <= WP 5.8 */
         }
 
@@ -203,6 +208,7 @@ body.toplevel_page_webhostbox {
 
             .dashicon {
                 margin-right: 10px;
+
                 /* <= WP 5.6 */
             }
         }
@@ -227,7 +233,8 @@ body.toplevel_page_webhostbox {
 
 .wpwhb-app-body {
     padding: 2rem 24px 1rem;
-    background-color: #FFFFFF;
+    background-color: #FFF;
+
     &-inner {
         max-width: 1290px;
         margin-left: auto;
@@ -248,6 +255,7 @@ body.toplevel_page_webhostbox {
     &.col2,
     &.col3,
     &.col4 {
+
         @media screen and (min-width: 600px) {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -255,12 +263,14 @@ body.toplevel_page_webhostbox {
 
     &.col3,
     &.col4 {
+
         @media screen and (min-width: 800px) {
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
     }
 
     &.col4 {
+
         @media screen and (min-width: 1020px) {
             grid-template-columns: repeat(4, minmax(0, 1fr));
         }
@@ -278,7 +288,7 @@ body.toplevel_page_webhostbox {
 
     .components-snackbar {
         background-color: var(--color-secondary-lighter);
-        box-shadow: inset -2px -2px 0px 4px var(--color-secondary-dark);
+        box-shadow: inset -2px -2px 0 4px var(--color-secondary-dark);
     }
 
     .components-snackbar__content {
@@ -328,6 +338,7 @@ body.toplevel_page_webhostbox {
     }
 
     &[open] {
+
         .nfd-details-icon {
             transform: rotate(0deg);
         }
@@ -335,6 +346,7 @@ body.toplevel_page_webhostbox {
 
     &:hover,
     &[open] {
+
         .nfd-details-icon {
             color: var(--color-primary);
         }
@@ -346,6 +358,7 @@ body.toplevel_page_webhostbox {
     padding-bottom: 1.5rem;
     
     .nfd-details {
+
         &:not(:last-child) {
             margin-bottom: 1rem;
         }
@@ -354,7 +367,9 @@ body.toplevel_page_webhostbox {
 
 // Performance accordion specific styles
 .performance-details {
+
     &[open] {
+
         #performance-portal {            
             // Hide the performance module's built-in header using title attribute
             .nfd-page[title="Performance"] > div:first-child {
@@ -365,6 +380,7 @@ body.toplevel_page_webhostbox {
             h1:contains("Performance"),
             .nfd-page > div > h1,
             .nfd-page > div > h2 {
+
                 &:first-child {
                     display: none !important;
                 }
@@ -391,6 +407,7 @@ body.toplevel_page_webhostbox {
 .wpwhb-app-help-container,
 .wpwhb-app-settings-container,
 .wpwhb-app-marketplace-container {
+
     .nfd-container__header {
         border-bottom: none !important;
         border-bottom-width: 0 !important;
