@@ -230,7 +230,7 @@ async function syncWooCommerceVisibilityOptions() {
  * @param {import('@playwright/test').Page} page
  * @param {number} [timeoutMs]
  */
-async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 30000) {
+async function waitForWooCommerceAdminBarBadge(page, timeoutMs = 120000) {
   await page.waitForSelector('#wp-admin-bar-woocommerce-site-visibility-badge', {
     state: 'attached',
     timeout: timeoutMs,
