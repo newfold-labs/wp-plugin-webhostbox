@@ -1,16 +1,16 @@
 :root {
     // Primary (Red Brand Colors)
-    --color-primary: #3498DB;Primary--color-primary
+    --color-primary: #3498DB;
     --color-primary-dark: #2980B9;
     --color-primary-light: #5DADE2;
     --color-primary-lighter: #D6EAF8;
     // Secondary (Neutral Grays)
-    --color-secondary: #1F2937;Secondary--color-secondary
+    --color-secondary: #1F2937;
     --color-secondary-dark: #111827;
     --color-secondary-light: #4B5563;
     --color-secondary-lighter: #F3F4F6;
     // UI
-    --color-title: #1F2937;UI--color-title
+    --color-title: #1F2937;
     --color-text: #374151;
     --color-link: #BD5800;
     --color-border: rgba(0, 0, 0, 0.1);
@@ -18,7 +18,7 @@
     --color-warning: #EA580C;
     --color-error: #DC2626;
     // Contrast
-    --color-white: #FFF;Contrast--color-white
+    --color-white: #FFF;
     --color-off-white: #F5F6F8;
     --color-black: #000;
     --color-success-contrast: #DCFCE7;
@@ -27,7 +27,7 @@
     --color-canvas: #FDFDFD;
 
     // NFD Module Overrides (wp-module-performance, etc.)
-    --nfd-color-primary: #3498DB;NFDModuleOverrides--nfd-color-primary
+    --nfd-color-primary: #3498DB;
     --nfd-color-primary-dark: #2980B9;
     --nfd-color-primary-light: #5DADE2;
     --nfd-color-primary-lighter: #D6EAF8;
