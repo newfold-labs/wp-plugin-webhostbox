@@ -87,16 +87,11 @@ test.describe('Dashboard Widgets', () => {
     await expect(enableComingSoonButton).toBeVisible();
     await expect(enableComingSoonButton).toContainText('Enable Coming Soon');
     await expect(enableComingSoonButton).toHaveAttribute('href', '#');
-    // Click the button and wait for the API call to complete
-    enableComingSoonButton.click();
-
-    // Wait for the UI to update
-    // await page.waitForTimeout(1000);
-
-    // Coming Soon Enabled - wait for preview link to appear
+    // Widget enables coming soon via NewfoldRuntime, then reloads the dashboard.
     const previewLink = page.locator('a[data-test-id="nfd-preview-site"]');
-    previewLink.scrollIntoViewIfNeeded();
-    await expect(previewLink).toBeVisible();
+    await enableComingSoonButton.click();
+    await page.waitForLoadState('load');
+    await expect(previewLink).toBeVisible({ timeout: 30000 });
     await expect(viewSiteLink).toHaveCount(0);
 
     // Check status changed to "Not Live"
@@ -114,16 +109,10 @@ test.describe('Dashboard Widgets', () => {
     await expect(disableComingSoonButton).toBeVisible();
     await expect(disableComingSoonButton).toContainText('Launch Site');
     await expect(disableComingSoonButton).toHaveAttribute('href', '#');
-    
-    // Click the button and wait for the API call to complete
-    disableComingSoonButton.click();
-    
-    // Wait for the UI to update
-    // await page.waitForTimeout(1000);
 
-    // Coming Soon Disabled
-    viewSiteLink.scrollIntoViewIfNeeded();
-    await expect(viewSiteLink).toBeVisible();
+    await disableComingSoonButton.click();
+    await page.waitForLoadState('load');
+    await expect(viewSiteLink).toBeVisible({ timeout: 30000 });
     await expect(statusElement).toContainText('Live');
     await expect(widgetBody).toContainText('website is live');
     await expect(widgetBody).toHaveAttribute('data-coming-soon', 'false');

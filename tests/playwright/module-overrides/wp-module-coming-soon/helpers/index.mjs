@@ -1,0 +1,450 @@
+/**
+ * Coming Soon Module Test Helpers for Playwright (WebHostBox override).
+ * Adds WooCommerce option sync + wp-admin navigation after sync for WP 6.9+ matrix jobs.
+ */
+import { expect } from '@playwright/test';
+import { join, dirname } from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Resolve plugin directory from PLUGIN_DIR env var (set by playwright.config.mjs) or process.cwd()
+const pluginDir = process.env.PLUGIN_DIR || process.cwd();
+
+// Build path to plugin helpers (.mjs extension for ES module compatibility)
+const finalHelpersPath = join(pluginDir, 'tests/playwright/helpers/index.mjs');
+
+// Import plugin helpers using file:// URL
+const helpersUrl = pathToFileURL(finalHelpersPath).href;
+const pluginHelpers = await import(helpersUrl);
+
+// Destructure plugin helpers
+let { auth, wordpress, newfold, a11y, utils } = pluginHelpers;
+const { fancyLog } = utils;
+const { setCapability } = newfold;
+
+/**
+ * Install/uninstall helpers for WooCommerce (shared, defined at the plugin level in
+ * tests/playwright/helpers/newfold.mjs so every module reuses the same implementation,
+ * which also deactivates known WooCommerce-dependent companion plugins on uninstall).
+ * `removeWooCommerce` is kept as an alias of `uninstallWooCommerce` for existing callers.
+ */
+const {
+  installWooCommerce,
+  uninstallWooCommerce,
+  waitForWooCommerceAdminBarBadge,
+} = newfold;
+const removeWooCommerce = uninstallWooCommerce;
+
+const ADMIN_GOTO_OPTS = { waitUntil: 'domcontentloaded', timeout: 60_000 };
+
+/** Coming-soon widget buttons trigger a wp-admin reload before the new state renders. */
+const WIDGET_RELOAD_TIMEOUT = 60_000;
+
+/**
+ * @param {import('@playwright/test').Page} page
+ */
+async function waitForWpAdminWindow(page) {
+  await page.locator('body.wp-admin').waitFor({ state: 'attached', timeout: 30_000 });
+  await page.locator('#wpadminbar').waitFor({ state: 'visible', timeout: 30_000 });
+}
+
+/**
+ * wp-admin navigations often abort the `load` event (admin scripts, redirects). Use
+ * domcontentloaded and wait for admin chrome; tolerate ERR_ABORTED when the document still loads.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @param {string} path - Path from site root (e.g. /wp-admin/index.php)
+ */
+async function gotoPath(page, path) {
+  try {
+    await page.goto(path, ADMIN_GOTO_OPTS);
+  } catch (error) {
+    const message = String(error);
+    if (!/ERR_ABORTED|frame was detached|NS_BINDING_ABORTED/i.test(message)) {
+      throw error;
+    }
+  }
+
+  if (path.includes('/wp-admin')) {
+    await waitForWpAdminWindow(page);
+  } else {
+    await page.locator('body').waitFor({ state: 'attached', timeout: 30_000 });
+  }
+}
+
+/**
+ * Set coming soon option
+ * 
+ * @param {import('@playwright/test').Page|null} page - Unused; kept for signature parity
+ * @param {boolean} enabled - Whether coming soon should be enabled
+ * @param {string} optionName - Option name (default: 'nfd_coming_soon')
+ */
+async function setComingSoonOption(page, enabled, optionName = 'nfd_coming_soon') {
+  try {
+    // Convert boolean to WordPress option format (1/0)
+    const value = enabled ? '1' : '0';
+    await wordpress.setOption(optionName, value);
+  } catch (error) {
+    fancyLog(`Failed to set ${optionName}:` + error.message, 55, 'yellow');
+  }
+}
+
+/**
+ * Navigate to settings page
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string} pluginId - Plugin ID for URL construction
+ */
+async function navigateToSettings(page, pluginId = 'webhostbox') {
+  await gotoPath(page, `/wp-admin/admin.php?page=${pluginId}#/settings/settings`);
+}
+
+/**
+ * Navigate to home page
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string} pluginId - Plugin ID for URL construction
+ */
+async function navigateToHome(page, pluginId = 'webhostbox') {
+  await gotoPath(page, `/wp-admin/admin.php?page=${pluginId}#/home`);
+}
+
+/**
+ * Navigate to WordPress admin
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function navigateToWpAdmin(page) {
+  await gotoPath(page, '/wp-admin/index.php');
+}
+
+/**
+ * Navigate to frontend
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function navigateToFrontend(page) {
+  await gotoPath(page, '/');
+}
+
+/**
+ * Get coming soon toggle element
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @returns {import('@playwright/test').Locator} Toggle locator
+ */
+function getComingSoonToggle(page) {
+  return page.locator('[data-id="coming-soon-toggle"]');
+}
+
+/**
+ * Get admin bar site visibility badge
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @returns {import('@playwright/test').Locator} Badge locator
+ */
+function getAdminBarBadge(page) {
+  return page.locator('#wp-admin-bar-nfd-site-visibility-badge');
+}
+
+/**
+ * Get WooCommerce admin bar badge
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @returns {import('@playwright/test').Locator} Badge locator
+ */
+function getWooCommerceAdminBarBadge(page) {
+  return page.locator('#wp-admin-bar-woocommerce-site-visibility-badge');
+}
+
+/**
+ * Get coming soon section
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string} appClass - App class selector
+ * @returns {import('@playwright/test').Locator} Section locator
+ */
+function getComingSoonSection(page, appClass) {
+  return page.locator(`${appClass}-app-settings-coming-soon`);
+}
+
+/**
+ * Get site preview warning
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @returns {import('@playwright/test').Locator} Warning locator
+ */
+function getSitePreviewWarning(page) {
+  return page.locator('.nfd-site-preview-warning');
+}
+
+/**
+ * Get admin notice
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @returns {import('@playwright/test').Locator} Notice locator
+ */
+function getAdminNotice(page) {
+  return page.locator('.notice-warning');
+}
+
+/**
+ * Get notifications container
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @returns {import('@playwright/test').Locator} Notifications locator
+ */
+function getNotifications(page) {
+  return page.locator('.nfd-notifications');
+}
+
+/**
+ * Enable coming soon mode via dashboard widget
+ * Navigates to dashboard and clicks the enable button if coming soon is currently disabled
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function enableComingSoon(page) {
+  await navigateToWpAdmin(page);
+
+  const enableButton = page.locator('[data-test-id="nfd-coming-soon-enable"]');
+  const disableButton = page.locator('[data-test-id="nfd-coming-soon-disable"]');
+
+  // Wait for either button to be visible (widget loaded)
+  await expect(enableButton.or(disableButton)).toBeVisible({ timeout: 20000 });
+
+  // If enable button is visible, coming soon is currently disabled - click to enable
+  if (await enableButton.isVisible()) {
+    await enableButton.click();
+    // The widget reloads wp-admin once the REST call resolves, and a full dashboard load
+    // takes ~15s on wp-env, so allow for the pending navigation plus the reload.
+    await expect(disableButton).toBeVisible({ timeout: WIDGET_RELOAD_TIMEOUT });
+  }
+}
+
+/**
+ * Disable coming soon mode via dashboard widget
+ * Navigates to dashboard and clicks the disable button if coming soon is currently enabled
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function disableComingSoon(page) {
+  await navigateToWpAdmin(page);
+
+  const enableButton = page.locator('[data-test-id="nfd-coming-soon-enable"]');
+  const disableButton = page.locator('[data-test-id="nfd-coming-soon-disable"]');
+
+  // Wait for either button to be visible (widget loaded)
+  await expect(enableButton.or(disableButton)).toBeVisible({ timeout: 20000 });
+
+  // If disable button is visible, coming soon is currently enabled - click to disable
+  if (await disableButton.isVisible()) {
+    await disableButton.click();
+    await expect(enableButton).toBeVisible({ timeout: WIDGET_RELOAD_TIMEOUT });
+  }
+}
+
+/**
+ * Verify coming soon is active
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string} appClass - App class selector
+ */
+async function verifyComingSoonActive(page, appClass) {
+  // Check admin bar badge (if present)
+  const adminBarBadge = getAdminBarBadge(page);
+  if (await adminBarBadge.count() > 0) {
+    await expect(adminBarBadge).toBeVisible();
+    const badgeLink = adminBarBadge.locator('a.ab-item');
+    await expect(badgeLink).toContainText('Coming soon');
+  }
+  
+  // Check coming soon section
+  const comingSoonSection = getComingSoonSection(page, appClass);
+  if (await comingSoonSection.count() > 0) {
+    await expect(comingSoonSection.locator('h3')).toContainText('Site Status');
+    await expect(comingSoonSection.locator('label')).toContainText('Coming');
+  }
+  
+  // Check toggle state
+  const toggle = getComingSoonToggle(page);
+  await expect(toggle).toHaveAttribute('aria-checked', 'true');
+}
+
+/**
+ * Verify coming soon is inactive
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifyComingSoonInactive(page) {
+  // Check admin bar badge shows live (if present)
+  const liveBadge = page.locator('#wp-toolbar .nfd-site-status-badge-live a.ab-item');
+  if (await liveBadge.count() > 0) {
+    await expect(liveBadge).toBeVisible();
+    await expect(liveBadge).toContainText('Live');
+  }
+  
+  // Check toggle state
+  const toggle = getComingSoonToggle(page);
+  await expect(toggle).toHaveAttribute('aria-checked', 'false');
+}
+
+/**
+ * Verify WooCommerce coming soon is active
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifyWooCommerceComingSoonActive(page) {
+  await waitForWooCommerceAdminBarBadge(page);
+
+  const ourBadge = getAdminBarBadge(page);
+  await expect(ourBadge).toHaveCount(0, { timeout: 20000 });
+
+  const wooBadge = getWooCommerceAdminBarBadge(page);
+  await expect(wooBadge).toBeVisible({ timeout: 20000 });
+
+  const badgeLink = wooBadge.locator('a.ab-item');
+  await expect(badgeLink).toHaveAttribute('href', { timeout: 20000 });
+
+  const href = await badgeLink.getAttribute('href');
+  expect(href).toContain('wc-settings');
+}
+
+/**
+ * Verify WooCommerce coming soon is inactive
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifyWooCommerceComingSoonInactive(page) {
+  await waitForWooCommerceAdminBarBadge(page);
+
+  const liveBadge = page.locator('#wp-toolbar .woocommerce-site-status-badge-live a.ab-item');
+  await expect(liveBadge).toBeVisible({ timeout: 20000 });
+  await expect(liveBadge).toContainText('Live', { timeout: 20000 });
+}
+
+/**
+ * Verify notification appears
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ * @param {string} message - Expected notification message
+ */
+async function verifyNotification(page, message) {
+  const notifications = getNotifications(page);
+  const notification = notifications.locator('.nfd-notification');
+  await expect(notification).toContainText(message);
+}
+
+/**
+ * Verify admin notice appears
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifyAdminNotice(page) {
+  // Filter notices by expected text to avoid strict mode conflicts
+  const notice = page.locator('.notice-warning', { hasText: 'Your site is currently' });
+  await expect(notice.first()).toBeVisible();
+}
+
+/**
+ * Verify site preview warning appears
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifySitePreviewWarning(page) {
+  const warning = getSitePreviewWarning(page);
+  if (await warning.count() > 0) {
+    await expect(warning.first()).toBeVisible();
+  }
+}
+
+/**
+ * Verify coming soon page on frontend
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifyComingSoonFrontend(page) {
+  const title = await page.title();
+  expect(title).toContain('Coming Soon');
+  
+  const wrap = page.locator('#wrap');
+  await expect(wrap.locator('h1')).toHaveCount(1);
+  
+  const header = page.locator('header');
+  await expect(header.locator('.login-link')).toHaveCount(1);
+}
+
+/**
+ * Verify site is live on frontend
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifySiteLiveFrontend(page) {
+  const title = await page.title();
+  expect(title).not.toContain('Coming Soon');
+  
+  const body = page.locator('body');
+  await expect(body.locator('text=Coming Soon')).toHaveCount(0);
+}
+
+/**
+ * Verify site preview warning is hidden
+ * 
+ * @param {import('@playwright/test').Page} page - Playwright page object
+ */
+async function verifySitePreviewWarningHidden(page) {
+  await navigateToFrontend(page);
+
+  const warning = getSitePreviewWarning(page);
+  await expect(warning).toHaveCount(0, { timeout: 20000 });
+}
+
+/**
+ * Get app class from environment
+ * 
+ * @returns {string} App class selector
+ */
+function getAppClass() {
+  const appId = process.env.APP_ID || 'webhostbox';
+  return `.${appId}`;
+}
+
+export {
+  // Plugin helpers (re-exported for convenience)
+  auth,
+  wordpress,
+  newfold,
+  a11y,
+  utils,
+  // Coming Soon helpers
+  removeWooCommerce,
+  installWooCommerce,
+  setComingSoonOption,
+  navigateToSettings,
+  navigateToHome,
+  navigateToWpAdmin,
+  navigateToFrontend,
+  getComingSoonToggle,
+  getAdminBarBadge,
+  getWooCommerceAdminBarBadge,
+  getComingSoonSection,
+  getSitePreviewWarning,
+  getAdminNotice,
+  getNotifications,
+  enableComingSoon,
+  disableComingSoon,
+  verifyComingSoonActive,
+  verifyComingSoonInactive,
+  verifyWooCommerceComingSoonActive,
+  verifyWooCommerceComingSoonInactive,
+  verifyNotification,
+  verifyAdminNotice,
+  verifySitePreviewWarning,
+  verifyComingSoonFrontend,
+  verifySiteLiveFrontend,
+  verifySitePreviewWarningHidden,
+  getAppClass,
+};

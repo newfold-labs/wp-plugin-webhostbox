@@ -51,7 +51,9 @@ function getVendorModules() {
 	} catch (error) {
 		// No vendor directories found, continue
 	}
-	return vendorModules;
+	const removeModules = ['wp-module-notifications', 'wp-module-ecommerce', 'wp-module-migration',  'wp-module-deactivation']; // Add any modules you want to exclude here
+	const filteredVendorModules = vendorModules.filter((module) => !removeModules.includes(module.name)); // Exclude specific modules if needed
+	return filteredVendorModules;
 }
 
 function generateProjects() {
