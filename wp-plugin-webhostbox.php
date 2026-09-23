@@ -15,7 +15,7 @@
  * Version:           1.1.0
  * Requires at least: 6.6
  * Requires PHP:      7.4
- * Tested up to:      7.1
+ * Tested up to:      7.1.2
  * Author:            WebHostBox
  * Author URI:
  * Text Domain:       wp-plugin-webhostbox
