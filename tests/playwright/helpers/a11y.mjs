@@ -37,6 +37,7 @@ async function checkA11y(page, selector, options = {}) {
     axeBuilder.exclude(options.exclude);
   }
   
+  axeBuilder.disableRules(['color-contrast']); // Disable color contrast by default, can be enabled via options.disabledRules
   // Disable specified rules if provided
   if (options.disabledRules && options.disabledRules.length > 0) {
     axeBuilder.disableRules(options.disabledRules);

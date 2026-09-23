@@ -3,7 +3,7 @@ import {
 	webSettingsApiFetch,
 	comingSoonAdminbarToggle,
 } from '../../util/helpers';
-import { useState } from '@wordpress/element';
+import { useContext, useState } from '@wordpress/element';
 import { useUpdateEffect } from 'react-use';
 import { Alert, Container, ToggleField } from "@newfold/ui-component-library";
 import { useNotification } from 'App/components/notifications';
@@ -108,6 +108,7 @@ const ComingSoon = () => {
 			<div className="nfd-flex nfd-flex-col nfd-gap-6">
 				<ToggleField
 					id="coming-soon-toggle"
+					data-id="coming-soon-toggle"
 					label={__('Coming soon page', 'wp-plugin-webhostbox')}
 					description={__(
 						'Your Coming Soon page lets you hide your site from visitors while you make the magic happen.',

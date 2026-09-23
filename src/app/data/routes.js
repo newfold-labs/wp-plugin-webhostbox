@@ -44,6 +44,14 @@ export const routes = [
 		condition: await window.NewfoldFeatures?.isEnabled( 'performance' ),
 	},
 	{
+		// Alias used by wp-module-coming-soon Playwright helpers (Bluehost route shape).
+		name: '/settings/settings',
+		title: __( 'Settings', 'wp-plugin-webhostbox' ),
+		Component: Settings,
+		Icon: AdjustmentsHorizontalIcon,
+		condition: true,
+	},
+	{
 		name: '/settings',
 		title: __( 'Settings', 'wp-plugin-webhostbox' ),
 		Component: Settings,
